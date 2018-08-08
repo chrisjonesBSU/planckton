@@ -31,12 +31,14 @@ class OPLSUA_type:
     epsilon: float
     mass: float = -1
 
+
 @dataclass(frozen=True)
 class HarmonicBond:
     class_1: str
     class_2: str
     k: float
     lenght: float
+
 
 def write_xml(xml_data, xml_name):
     with open(xml_name, "w") as f:
@@ -68,7 +70,9 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
     sigma = float(opls_param_array[4]) / 10
     # We need to convert kcal/mol to kJ/mol
     epsilon = float(opls_param_array[5]) * 4.184
-    new_opls_type = OPLSUA_type(opls_type, atomic_number, atomic_name, charge, sigma, epsilon)
+    new_opls_type = OPLSUA_type(
+        opls_type, atomic_number, atomic_name, charge, sigma, epsilon
+    )
     oplsua_list.append(new_opls_type)
 
 print(f"problem lines {problem_lines} \n")
@@ -76,6 +80,8 @@ print(f"problem lines {problem_lines} \n")
 with open(ff_sb, "r") as f:
     ff_sb_lines = f.readlines()
 
+
+harmonic_bond_types = []
 for line in ff_sb_lines[2:50]:
     raw_harmonic_bond_type = line.strip(" ").strip().split(" ")
     harmonic_bond_array = list(filter(None, raw_harmonic_bond_type))
@@ -90,9 +96,7 @@ for line in ff_sb_lines[2:50]:
     # We need to convert Å to nm
     lenght = float(harmonic_bond_array[2]) / 10
     new_harmonic_bond = HarmonicBond(class_1, class_2, k, lenght)
-    print(new_harmonic_bond)
-
-
+    harmonic_bond_types.append(new_harmonic_bond)
 
 openMM_xml = "<ForceField>\n"
 # Atom Types
@@ -101,13 +105,17 @@ for opls_type in oplsua_list:
     openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
 openMM_xml += "</AtomTypes>\n"
 # Harmonic Bond Force
+openMM_xml += "<HarmonicBondForce>\n"
+for harmonic_bond in harmonic_bond_types:
+    openMM_xml += f' <Bond class1="{harmonic_bond.class_1}" class2="{harmonic_bond.class_2}" length="{harmonic_bond.lenght}" k="{harmonic_bond.k}"/>\n'
+openMM_xml += "</HarmonicBondForce>\n"
 # Harmonic Angle Force
 # Periodic Torsion Force (proper & improper)
 # Non-bonded Force
 openMM_xml += '<NonbondedForce coulomb14scale="0.833333" lj14scale="0.5">\n'
 for opls_type in oplsua_list:
     openMM_xml += f' <Atom type="{opls_type.opls_type}" charge="{opls_type.charge}" sigma="{opls_type.sigma}" epsilon="{opls_type.epsilon}"/>\n'
-openMM_xml += '</NonbondedForce>\n'
+openMM_xml += "</NonbondedForce>\n"
 
 openMM_xml += "</ForceField>\n"
 write_xml(openMM_xml, "oplsua.xml")
