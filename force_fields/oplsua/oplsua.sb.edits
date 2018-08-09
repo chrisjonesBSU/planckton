@@ -152,7 +152,7 @@ H2-NT 434.       1.01         AA(END)
 H3-N2 434.       1.01         ADE,GUA,CYT,GLN,ASN,ARG
 H3-N3 434.       1.01         LYS(OL)
 HO-OH 553.       0.945        SUG(OL) wlj mod 0.96 -> 0.945
-""""" 460.5      0.960        HO-OH Merz, JCC 15, 1019 (94)
+HM-OH 460.5      0.960        HO-OH Merz, JCC 15, 1019 (94)
 HO-OS 553.       0.945        SUG(OL)      6/6/94
 HS-SH 274.       1.336        CYS(OL)
 LP-S  600.       0.679
