@@ -11,14 +11,20 @@ from dataclasses import dataclass
 # lines 2-178?
 # 0             1                 2      3+
 # classA-classB K (kcal/A**2-mol) r (Å)  Misc
+# 179-EOF
+# 0                    2                   3           4+
+# class1-class2-class3 K (kcal/rad**2-mol) theta (deg) Misc
+
 
 # openMM units -> nm, amu, kJ/mole, proton charge, kJ/mol/nm**2 (bond k), kJ/mol/radian**2 (angle k)
-
-ff_par = "oplsua.par"
+PI = 3.141592653589
+ff_par = "oplsua.par.edits"
 ff_par_HEADER = 2
 ff_par_OPLS_TYPE_END = 434
 
-ff_sb = "oplsua.sb"
+ff_sb = "oplsua.sb.edits"
+ff_sb_HEADER = 2
+ff_sb_HARMONIC_BOND_END = 178
 
 
 @dataclass(order=True, frozen=True)
@@ -39,6 +45,14 @@ class HarmonicBond:
     k: float
     lenght: float
 
+
+@dataclass(frozen=True)
+class HarmonicAngle:
+    class_1: str
+    class_2: str
+    class_3: str
+    k: float
+    angle: float
 
 def write_xml(xml_data, xml_name):
     with open(xml_name, "w") as f:
@@ -82,7 +96,7 @@ with open(ff_sb, "r") as f:
 
 
 harmonic_bond_types = []
-for line in ff_sb_lines[2:50]:
+for line in ff_sb_lines[ff_sb_HEADER:ff_sb_HARMONIC_BOND_END]:
     raw_harmonic_bond_type = line.strip(" ").strip().split(" ")
     harmonic_bond_array = list(filter(None, raw_harmonic_bond_type))
     # In some cases, there is a space between two classes, ie C -CA this causes an
@@ -92,11 +106,30 @@ for line in ff_sb_lines[2:50]:
         harmonic_bond_array[:2] = ["".join(harmonic_bond_array[:2])]
     class_1, class_2 = harmonic_bond_array[0].split("-")
     # We need to convert kcal/(Å**2 mol) to kJ/(nm**2 mol)
-    k = float(harmonic_bond_array[1]) * (4.184 * 100)
+    k = float(harmonic_bond_array[1]) * (4.184 * 100 * 2)
     # We need to convert Å to nm
     lenght = float(harmonic_bond_array[2]) / 10
     new_harmonic_bond = HarmonicBond(class_1, class_2, k, lenght)
     harmonic_bond_types.append(new_harmonic_bond)
+
+harmonic_angle_types = []
+for line in ff_sb_lines[179:250]:
+    # ** seems to indicate a comment
+    if line.startswith("**"):
+        continue
+    raw_harmonic_angle_type = line.strip(" ").strip().split(" ")
+    harmonic_angle_array = list(filter(None, raw_harmonic_angle_type))
+    while len(harmonic_angle_array[0].split("-")) != 3:
+        harmonic_angle_array[0] += harmonic_angle_array.pop(1)
+    class_1, class_2, class_3 = harmonic_angle_array[0].split("-")
+    # We need to convert kcal/(deg**2 mol) to kJ/(rad**2 mol)
+    k = float(harmonic_angle_array[1]) * (4.184 * 2)
+    # We need to converd deg to rad
+    angle = float(harmonic_angle_array[2]) * (PI/180)
+    new_harmonic_angle = HarmonicAngle(class_1, class_2, class_3, k, angle)
+    harmonic_angle_types.append(new_harmonic_angle)
+
+
 
 openMM_xml = "<ForceField>\n"
 # Atom Types

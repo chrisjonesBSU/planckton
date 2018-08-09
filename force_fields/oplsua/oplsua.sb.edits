@@ -27,7 +27,7 @@ C -O  570.       1.229        URAGUA,CYT,AA
 C -O2 656.       1.25         GLU,ASP
 C -OH 450.       1.364        TYR
 CA-OH 450.       1.364        TYR (using new AMBER type)
-C -OS 214.       1.327        J.Comp.Chem.1990,11,1181 SKF8
+C -OS 214.       1.327        J.Comp.Chem.1990,11,1181 SKF8 NOTE: the original source incorrectly labels units as kcal/mol/deg^2
 C*-C2 317.       1.495        TRP(OL)
 C*-CB 388.       1.459        TRP
 C*-CG 546.       1.352        TRP
