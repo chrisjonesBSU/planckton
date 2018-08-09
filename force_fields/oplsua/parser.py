@@ -132,17 +132,25 @@ for line in ff_sb_lines[179:250]:
 
 
 openMM_xml = "<ForceField>\n"
+
 # Atom Types
 openMM_xml += "<AtomTypes>\n"
 for opls_type in oplsua_list:
     openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
 openMM_xml += "</AtomTypes>\n"
+
 # Harmonic Bond Force
 openMM_xml += "<HarmonicBondForce>\n"
 for harmonic_bond in harmonic_bond_types:
     openMM_xml += f' <Bond class1="{harmonic_bond.class_1}" class2="{harmonic_bond.class_2}" length="{harmonic_bond.lenght}" k="{harmonic_bond.k}"/>\n'
 openMM_xml += "</HarmonicBondForce>\n"
+
 # Harmonic Angle Force
+openMM_xml += "<HarmonicAngleForce>\n"
+for harmonic_angle in harmonic_angle_types:
+    openMM_xml += f' <Angle class1="{harmonic_angle.class_1}" class2="{harmonic_angle.class_2}" class3="{harmonic_angle.class_3}" angle="{harmonic_angle.angle}" k="{harmonic_angle.k}"/>\n'
+openMM_xml += "</HarmonicAngleForce>\n"
+
 # Periodic Torsion Force (proper & improper)
 # Non-bonded Force
 openMM_xml += '<NonbondedForce coulomb14scale="0.833333" lj14scale="0.5">\n'
