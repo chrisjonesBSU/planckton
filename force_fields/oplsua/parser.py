@@ -26,8 +26,10 @@ ff_sb = "oplsua.sb.edits"
 ff_sb_HEADER = 2
 ff_sb_HARMONIC_BOND_END = 178
 
+ff_sb_HARMONIC_ANGLE_START = 179
 
-@dataclass(order=True, frozen=True)
+
+@dataclass(frozen=True)
 class OPLSUA_type:
     opls_type: str
     atomic_name: str
@@ -53,6 +55,7 @@ class HarmonicAngle:
     class_3: str
     k: float
     angle: float
+
 
 def write_xml(xml_data, xml_name):
     with open(xml_name, "w") as f:
@@ -113,7 +116,7 @@ for line in ff_sb_lines[ff_sb_HEADER:ff_sb_HARMONIC_BOND_END]:
     harmonic_bond_types.append(new_harmonic_bond)
 
 harmonic_angle_types = []
-for line in ff_sb_lines[179:250]:
+for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
     # ** seems to indicate a comment
     if line.startswith("**"):
         continue
