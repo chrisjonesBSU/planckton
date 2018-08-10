@@ -28,6 +28,8 @@ ff_sb_HARMONIC_BOND_END = 178
 
 ff_sb_HARMONIC_ANGLE_START = 179
 
+ff_aa_dihedrial = "../oplsaa/oplsaa.par"
+ff_aa_dihedrial_SKIP = 4038
 
 @dataclass(frozen=True)
 class OPLSUA_type:
@@ -155,6 +157,25 @@ for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
     angle = float(harmonic_angle_array[2]) * (PI/180)
     new_harmonic_angle = HarmonicAngle(class_1, class_2, class_3, k, angle)
     harmonic_angle_types.append(new_harmonic_angle)
+
+
+with open(ff_aa_dihedrial, "r") as f:
+    ff_aa_dihedrial_lines = f.readlines()
+
+for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:4050]:
+    raw_opls_dihedrial_type = line.strip(" ").strip().split(" ")
+    dihedrial_array = list(filter(None, raw_opls_dihedrial_type))
+    # Like with the angles and bonds, we need to deal with spaces
+    # But with dihedrials, the index is different
+    while len(dihedrial_array[5].split("-")) != 4:
+        dihedrial_array[5] += dihedrial_array.pop(6)
+    # We need to remove the double bond notation "="
+    class_1, class_2, class_3, class_4 = dihedrial_array[5].replace("=", "").split("-")
+    f1, f2, f3, f4 = map(float, dihedrial_array[1:5])
+    # Convert to RB style torsions
+    c_coefs = opls_dihedral_to_RB_torsion(f1, f2, f3, f4)
+    new_rb_torsion = RBTorsion(class_1, class_2, class_3, class_4, *c_coefs)
+    print(new_rb_torsion)
 
 openMM_xml = "<ForceField>\n"
 
