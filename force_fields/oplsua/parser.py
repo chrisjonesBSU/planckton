@@ -76,6 +76,16 @@ def write_xml(xml_data, xml_name):
         f.write(xml_data)
 
 
+def opls_dihedral_to_RB_torsion(f1, f2, f3, f4):
+    c0 = f2+0.5*(f1+f3)
+    c1 = 0.5*(-f1+3*f3)
+    c2 = -f2 + 4*f4
+    c3 = -2*f3
+    c4 = -4*f4
+    c5 = 0
+    return c0, c1, c2, c3, c4, c5
+
+
 oplsua_list = []
 problem_lines = []
 
