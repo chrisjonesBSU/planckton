@@ -57,6 +57,20 @@ class HarmonicAngle:
     angle: float
 
 
+@dataclass(frozen=True)
+class RBTorsion:
+    class_1: str
+    class_2: str
+    class_3: str
+    class_4: str
+    c0: float
+    c1: float
+    c2: float
+    c3: float
+    c4: float
+    c5: float
+
+
 def write_xml(xml_data, xml_name):
     with open(xml_name, "w") as f:
         f.write(xml_data)
@@ -132,8 +146,6 @@ for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
     new_harmonic_angle = HarmonicAngle(class_1, class_2, class_3, k, angle)
     harmonic_angle_types.append(new_harmonic_angle)
 
-
-
 openMM_xml = "<ForceField>\n"
 
 # Atom Types
@@ -154,7 +166,7 @@ for harmonic_angle in harmonic_angle_types:
     openMM_xml += f' <Angle class1="{harmonic_angle.class_1}" class2="{harmonic_angle.class_2}" class3="{harmonic_angle.class_3}" angle="{harmonic_angle.angle}" k="{harmonic_angle.k}"/>\n'
 openMM_xml += "</HarmonicAngleForce>\n"
 
-# Periodic Torsion Force (proper & improper)
+# RB Torsionorsion Force
 # Non-bonded Force
 openMM_xml += '<NonbondedForce coulomb14scale="0.833333" lj14scale="0.5">\n'
 for opls_type in oplsua_list:
