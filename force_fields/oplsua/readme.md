@@ -27,3 +27,5 @@
 * `oplsua.xml` Has UA types, bonds, and angles but AA dihedrals from `oplsaa.par.edits`
 * Some atom types in `oplsua.par` are `??` The parsing code skips these types.
 * Dihedirals can have wild cards by specifying and empty class/type, but bonds and angles cannot. Will need to check to see if any wild cards in are in the xml.
+* Something to think about with the mass dictionary, are atom classes reused? I don't know.
+* Hmmm I do think there is reuse, the net effect is I'll be off by a mass of H (or two).
