@@ -23,5 +23,7 @@
   ```
 
 ## Notes
-* Line 155 in opls.sb has a duplicate param, but different K and r, not sure how to handle this, in opls.sb.edits, I've renamed the HO to HM to reflect the authors last name, but nothing will ever be typed HM.
+* Line 155 in oplsua.sb has a duplicate param, but different K and r, not sure how to handle this, in oplsua.sb.edits, I've renamed the HO to HM to reflect the authors last name, but nothing will ever be typed HM.
 * `oplsua.xml` Has UA types, bonds, and angles but AA dihedrals from `oplsaa.par.edits`
+* Some atom types in `oplsua.par` are `??` The parsing code skips these types.
+* Dihedirals can have wild cards by specifying and empty class/type, but bonds and angles cannot. Will need to check to see if any wild cards in are in the xml.
