@@ -1,6 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, InitVar
 
 
+FOYER_XML = True
 PI = 3.141592653589
 ff_par = "oplsua.par.edits"
 ff_par_HEADER = 2
@@ -15,8 +16,13 @@ ff_sb_HARMONIC_ANGLE_START = 179
 ff_aa_dihedrial = "../oplsaa/oplsaa.par.edits"
 ff_aa_dihedrial_SKIP = 4038
 
+# Taken from https://pubs.acs.org/doi/pdf/10.1021/ja00214a001
+UA_MASS = {"C": 12.0107, "O": 15.9994, "N": 14.0067, "H": 1.008, "C2": 14.027,
+           "CH": 13.019, "C3": 15.035, "CD": 12.0107, "O2": 15.9994, "N3": 14.0067,
+           "H3": 1.008, "OH": 12.0107, "HO": 1.008, "SH": 32.06, "HS": 1.008,
+           "S": 32.06, "NA": 14.0067, "NB": 14.0067}
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class OPLSUA_type:
     opls_type: str
     atomic_name: str
@@ -24,7 +30,13 @@ class OPLSUA_type:
     charge: float
     sigma: float
     epsilon: float
-    mass: float = -1
+    mass_dic: InitVar
+    _def = ""
+    _desc = ""
+    _doi = ""
+
+    def __post_init__(self, mass_dic):
+        self.mass = mass_dic[self.atomic_name]
 
 
 @dataclass(frozen=True)
@@ -99,7 +111,7 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
     # We need to convert kcal/mol to kJ/mol
     epsilon = float(opls_param_array[5]) * 4.184
     new_opls_type = OPLSUA_type(
-        opls_type, atomic_number, atomic_name, charge, sigma, epsilon
+        opls_type, atomic_number, atomic_name, charge, sigma, epsilon, mass_dic=UA_MASS
     )
     oplsua_list.append(new_opls_type)
 
@@ -177,12 +189,17 @@ for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:]:
 
 print(f"lines skipped in {ff_aa_dihedrial} {problem_lines} \n")
 
+
+
 openMM_xml = "<ForceField>\n"
 
 # Atom Types
 openMM_xml += "<AtomTypes>\n"
 for opls_type in oplsua_list:
-    openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
+    if FOYER_XML:
+        openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}" def="{opls_type._def}" desc="{opls_type._desc}" doi="{opls_type._doi}"/>\n'
+    else:
+        openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
 openMM_xml += "</AtomTypes>\n"
 
 # Harmonic Bond Force
