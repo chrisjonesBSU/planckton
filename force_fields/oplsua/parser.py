@@ -1,22 +1,6 @@
 from dataclasses import dataclass
 
 
-# opls.par header
-# Lines 2-434
-# 0   1  2    3          4        5       6+
-# TYP AN AT   CHARGE     SIGMA    EPSILON Misc
-# Type Atomic-Number Element Charge(?) Sigma(Å) Epsilon(kcal/mol)
-
-# opls.sb header
-# lines 2-178?
-# 0             1                 2      3+
-# classA-classB K (kcal/A**2-mol) r (Å)  Misc
-# 179-EOF
-# 0                    2                   3           4+
-# class1-class2-class3 K (kcal/rad**2-mol) theta (deg) Misc
-
-
-# openMM units -> nm, amu, kJ/mole, proton charge, kJ/mol/nm**2 (bond k), kJ/mol/radian**2 (angle k)
 PI = 3.141592653589
 ff_par = "oplsua.par.edits"
 ff_par_HEADER = 2
@@ -30,6 +14,7 @@ ff_sb_HARMONIC_ANGLE_START = 179
 
 ff_aa_dihedrial = "../oplsaa/oplsaa.par.edits"
 ff_aa_dihedrial_SKIP = 4038
+
 
 @dataclass(frozen=True)
 class OPLSUA_type:
@@ -79,11 +64,11 @@ def write_xml(xml_data, xml_name):
 
 
 def opls_dihedral_to_RB_torsion(f1, f2, f3, f4):
-    c0 = f2+0.5*(f1+f3)
-    c1 = 0.5*(-f1+3*f3)
-    c2 = -f2 + 4*f4
-    c3 = -2*f3
-    c4 = -4*f4
+    c0 = f2 + 0.5 * (f1 + f3)
+    c1 = 0.5 * (-f1 + 3 * f3)
+    c2 = -f2 + 4 * f4
+    c3 = -2 * f3
+    c4 = -4 * f4
     c5 = 0
     return c0, c1, c2, c3, c4, c5
 
@@ -154,7 +139,7 @@ for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
     # We need to convert kcal/(deg**2 mol) to kJ/(rad**2 mol)
     k = float(harmonic_angle_array[1]) * (4.184 * 2)
     # We need to converd deg to rad
-    angle = float(harmonic_angle_array[2]) * (PI/180)
+    angle = float(harmonic_angle_array[2]) * (PI / 180)
     new_harmonic_angle = HarmonicAngle(class_1, class_2, class_3, k, angle)
     harmonic_angle_types.append(new_harmonic_angle)
 
@@ -168,7 +153,7 @@ for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:]:
     raw_opls_dihedrial_type = line.strip(" ").strip().split(" ")
     dihedrial_array = list(filter(None, raw_opls_dihedrial_type))
     # Check to see if line is a dummy line or leave blank
-    if any(_ in dihedrial_array for _ in ("Dummy", "UNASSIGNED",)):
+    if any(_ in dihedrial_array for _ in ("Dummy", "UNASSIGNED")):
         problem_lines.append(dihedrial_array)
         continue
     # Like with the angles and bonds, we need to deal with spaces
@@ -178,7 +163,9 @@ for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:]:
         while len(dihedrial_array[5].split("-")) != 4:
             dihedrial_array[5] += dihedrial_array.pop(6)
         # We need to remove the double bond notation "="
-        class_1, class_2, class_3, class_4 = dihedrial_array[5].replace("=", "").split("-")
+        class_1, class_2, class_3, class_4 = (
+            dihedrial_array[5].replace("=", "").split("-")
+        )
     except IndexError:
         problem_lines.append(dihedrial_array)
         continue
