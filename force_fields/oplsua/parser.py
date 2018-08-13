@@ -17,16 +17,19 @@ ff_aa_dihedrial = "../oplsaa/oplsaa.par.edits"
 ff_aa_dihedrial_SKIP = 4038
 
 # Taken from https://pubs.acs.org/doi/pdf/10.1021/ja00214a001
-UA_MASS = {"C": 12.0107, "O": 15.9994, "N": 14.0067, "H": 1.008, "C2": 14.027,
+UA_MASS = {"C": 12.011, "O": 15.9994, "N": 14.0067, "H": 1.008, "C2": 14.027,
            "CH": 13.019, "C3": 15.035, "CD": 12.0107, "O2": 15.9994, "N3": 14.0067,
-           "H3": 1.008, "OH": 12.0107, "HO": 1.008, "SH": 32.06, "HS": 1.008,
-           "S": 32.06, "NA": 14.0067, "NB": 14.0067}
+           "H3": 1.008, "OH": 15.9994, "HO": 1.008, "SH": 32.06, "HS": 1.008,
+           "S": 32.06, "NA": 14.0067, "NB": 14.0067, "CP": 12.011, "CF": 12.011,
+           "CC": 12.011, "CG": 12.011, "CB": 12.011, "N2": 14.0067, "CA": 12.001,
+           "OS": 15.9994, "CT": 12.011, "C4": 16.043, "C9": 14.027, "C8": 13.019,
+           "C7": 12.011}
 
 @dataclass(frozen=False)
 class OPLSUA_type:
     opls_type: str
-    atomic_name: str
     atomic_number: int
+    atomic_name: str
     charge: float
     sigma: float
     epsilon: float
@@ -99,12 +102,14 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
         continue
     opls_type = f"opls_{int(opls_param_array[0]):03d}"
     try:
-        atomic_name = opls_param_array[1]
+        atomic_name = opls_param_array[2]
     except IndexError:
         problem_lines.append(opls_param_array)
         continue
-
-    atomic_number = opls_param_array[2]
+    # Skip the ?? types
+    if atomic_name == "??":
+        continue
+    atomic_number = opls_param_array[1]
     charge = opls_param_array[3]
     # We need to convert Å to nm
     sigma = float(opls_param_array[4]) / 10
