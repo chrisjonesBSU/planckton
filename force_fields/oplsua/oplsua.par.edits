@@ -2,7 +2,7 @@
  TYP AN AT   CHARGE     SIGMA    EPSILON
    1 06 C     0.500     3.750     0.105     Types 1 - 65  are for proteins from
    2 08 O    -0.500     2.960     0.210     W. L. Jorgensen  &  J. Tirado-Rives,
-   3 07 N    -0.570     3.250     0.170     J. Am. Chem. Soc., 110, 1657 (l988).
+   3 07 N    -0.570     3.250     0.170     J. Am. Chem. Soc., 110, 1657 (l988). dx.doi.org/10.1021/ja00214a001
    4 01 H     0.370     0.0       0.0
    5 06 C2    0.200     3.800     0.118     Note: for amide parameters -
    6 06 CH    0.200     3.800     0.080     NMA - types 1,2,3,4,7,39
@@ -65,7 +65,7 @@
   63 06 C3    0.250     3.800     0.170     CH3 in COOCH3
   64 06 CT    0.200     3.800     0.050
   65 06 C3    0.0       3.960     0.145         Types
-  66 06 C4    0.0       3.730     0.294     CH4 66-77: JACS,106,6638 (1984)
+  66 06 C4    0.0       3.730     0.294     CH4 66-77: JACS,106,6638 (1984) dx.doi.org/10.1021/ja00334a030
   67 06 C3    0.0       3.775     0.207     CH3 (C1) ETHANE
   68 06 C3    0.0       3.905     0.175     CH3 (C2) N-ALKANES
   69 06 C3    0.0       3.910     0.160     CH3 (C3) ISOBUTANE
@@ -110,7 +110,7 @@
  108 08 OS   -0.50      3.000     0.170     ETHER O  JCC,11,958 (1990)
  109 06 C3    0.25      3.800     0.170     ETHER CH3 (-O)   "
  110 06 C2    0.25      3.800     0.118     ETHER CH2 (-O)   "
- 111 08 OW   -0.834     3.15061   0.1521    O TIP3P Water JCP,79,926 (1983)
+ 111 08 OW   -0.834     3.15061   0.1521    O TIP3P Water JCP,79,926 (1983) dx.doi.org/10.1063/1.445869
  112 01 HW    0.417     0.0       0.0       H TIP3P Water      "
  113 08 OW    0.0       3.15365   0.1550    O TIP4P Water      "
  114 01 HW    0.520     0.0       0.0       H TIP4P Water      "
@@ -126,7 +126,7 @@
  124 16 ??    0.139     3.56      0.395     DMSO
  125 08 ??   -0.459     2.93      0.280     DMSO
  126 06 C3    0.160     3.81      0.160     DMSO
- 127 07 NT   -1.026     3.36      0.210     Ammonia - J. Gao
+ 127 07 NT   -1.026     3.36      0.210     Ammonia - J. Gao dx.doi.org/10.1021/j100138a028
  128 01 H2    0.342     0.0       0.0       Ammonia - JPC 97, 9241 (93)
  129 10 NE    0.0       2.780     0.069     Neon -  Hirschfelder (Wiley,1954)
  130 06 CA    0.0       3.550     0.070     fusion C in naphthalene
