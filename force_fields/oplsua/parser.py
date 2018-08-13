@@ -28,7 +28,7 @@ ff_sb_HARMONIC_BOND_END = 178
 
 ff_sb_HARMONIC_ANGLE_START = 179
 
-ff_aa_dihedrial = "../oplsaa/oplsaa.par"
+ff_aa_dihedrial = "../oplsaa/oplsaa.par.edits"
 ff_aa_dihedrial_SKIP = 4038
 
 @dataclass(frozen=True)
@@ -118,7 +118,7 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
     )
     oplsua_list.append(new_opls_type)
 
-print(f"problem lines {problem_lines} \n")
+print(f"lines skipped in {ff_par} {problem_lines} \n")
 
 with open(ff_sb, "r") as f:
     ff_sb_lines = f.readlines()
@@ -162,20 +162,33 @@ for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
 with open(ff_aa_dihedrial, "r") as f:
     ff_aa_dihedrial_lines = f.readlines()
 rb_torsion_list = []
-for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:4050]:
+problem_lines = []
+
+for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:]:
     raw_opls_dihedrial_type = line.strip(" ").strip().split(" ")
     dihedrial_array = list(filter(None, raw_opls_dihedrial_type))
+    # Check to see if line is a dummy line or leave blank
+    if any(_ in dihedrial_array for _ in ("Dummy", "UNASSIGNED",)):
+        problem_lines.append(dihedrial_array)
+        continue
     # Like with the angles and bonds, we need to deal with spaces
     # But with dihedrials, the index is different
-    while len(dihedrial_array[5].split("-")) != 4:
-        dihedrial_array[5] += dihedrial_array.pop(6)
-    # We need to remove the double bond notation "="
-    class_1, class_2, class_3, class_4 = dihedrial_array[5].replace("=", "").split("-")
+    # We also need to catch bad lines
+    try:
+        while len(dihedrial_array[5].split("-")) != 4:
+            dihedrial_array[5] += dihedrial_array.pop(6)
+        # We need to remove the double bond notation "="
+        class_1, class_2, class_3, class_4 = dihedrial_array[5].replace("=", "").split("-")
+    except IndexError:
+        problem_lines.append(dihedrial_array)
+        continue
     f1, f2, f3, f4 = map(float, dihedrial_array[1:5])
     # Convert to RB style torsions
     c_coefs = opls_dihedral_to_RB_torsion(f1, f2, f3, f4)
     new_rb_torsion = RBTorsion(class_1, class_2, class_3, class_4, *c_coefs)
     rb_torsion_list.append(new_rb_torsion)
+
+print(f"lines skipped in {ff_aa_dihedrial} {problem_lines} \n")
 
 openMM_xml = "<ForceField>\n"
 
