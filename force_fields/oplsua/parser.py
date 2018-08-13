@@ -161,7 +161,7 @@ for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
 
 with open(ff_aa_dihedrial, "r") as f:
     ff_aa_dihedrial_lines = f.readlines()
-
+rb_torsion_list = []
 for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:4050]:
     raw_opls_dihedrial_type = line.strip(" ").strip().split(" ")
     dihedrial_array = list(filter(None, raw_opls_dihedrial_type))
@@ -175,7 +175,7 @@ for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:4050]:
     # Convert to RB style torsions
     c_coefs = opls_dihedral_to_RB_torsion(f1, f2, f3, f4)
     new_rb_torsion = RBTorsion(class_1, class_2, class_3, class_4, *c_coefs)
-    print(new_rb_torsion)
+    rb_torsion_list.append(new_rb_torsion)
 
 openMM_xml = "<ForceField>\n"
 
@@ -198,6 +198,10 @@ for harmonic_angle in harmonic_angle_types:
 openMM_xml += "</HarmonicAngleForce>\n"
 
 # RB Torsionorsion Force
+openMM_xml += "<RBTorsionForce>\n"
+for rb_torsion in rb_torsion_list:
+    openMM_xml += f' <Proper class1="{rb_torsion.class_1}" class2="{rb_torsion.class_2}" class3="{rb_torsion.class_3}" class4="{rb_torsion.class_4}" c0="{rb_torsion.c0}" c1="{rb_torsion.c1}" c2="{rb_torsion.c2}" c3="{rb_torsion.c3}" c4="{rb_torsion.c4}" c5="{rb_torsion.c5}"/>\n'
+openMM_xml += "</RBTorsionForce>\n"
 # Non-bonded Force
 openMM_xml += '<NonbondedForce coulomb14scale="0.833333" lj14scale="0.5">\n'
 for opls_type in oplsua_list:
