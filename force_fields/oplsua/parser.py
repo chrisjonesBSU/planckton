@@ -101,7 +101,7 @@ OPLSUA_INFO = {
         "doi": "10.1021/ja00334a030",
     },
     "opls_071": {
-        "def": "C[!R;X2][C;!R][C;!R]",
+        "def": "C[!R;X2][C;!R]C",
         "desc": "CH2 (SP3) ALKANES",
         "doi": "10.1021/ja00334a030",
     },
