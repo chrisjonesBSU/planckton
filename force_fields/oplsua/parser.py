@@ -90,11 +90,6 @@ UA_MASS = {
 # Since we have a few PRs to make for this to work in Foyer I don't want to do
 # Anything by hand, so I will make a dictionary to fill out params we need
 OPLSUA_INFO = {
-    "opls_001": {
-        "def": "C",
-        "desc": "Types 1 - 65  are for proteins from W. L. Jorgensen  &  J. Tirado-Rives, J. Am. Chem. Soc., 110, 1657 (l988).",
-        "doi": "10.1021/ja00214a001",
-    },
     "opls_068": {
         "def": "C[!R;X1][C;!R]",
         "desc": "CH3 (C2) N-ALKANES",
