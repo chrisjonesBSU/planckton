@@ -229,7 +229,7 @@
  227 06 CA    0.00      3.50      0.08      Imidazole C4  Also use 208, 209,
  228 06 CA    0.04      3.50      0.08      Imidazole C5      210, 215, 216.
  229 01 HC    0.10      2.50      0.05      Imidazole H-C5, H-C6
- 230 06 CA   -0.115     3.55      0.07      Benzene C - 12 site JACS,112,4768-90
+ 230 06 CA   -0.115     3.55      0.07      Benzene C - 12 site JACS,112,4768-90 dx.doi.org/10.1021/ja00168a022
  231 01 HC    0.115     2.42      0.03      Benzene H - 12 site        "
  232 06 CT   -0.01      3.50      0.08      9-Me A or G C-N9
  233 01 HC    0.12      2.50      0.05      9-Me A or G H-CN9
