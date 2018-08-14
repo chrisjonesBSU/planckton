@@ -107,12 +107,20 @@ class OPLSUA_type:
     sigma: float
     epsilon: float
     mass_dic: InitVar
+    info_dic: InitVar
     _def = ""
     _desc = ""
     _doi = ""
 
-    def __post_init__(self, mass_dic):
+    def __post_init__(self, mass_dic, info_dic):
         self.mass = mass_dic[self.atomic_name]
+        try:
+            info = info_dic[self.opls_type]
+            self._def = info["def"]
+            self._desc = info["desc"]
+            self._doi = info["doi"]
+        except KeyError:
+            pass
 
 
 @dataclass(frozen=True)
@@ -190,7 +198,14 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
     # We need to convert kcal/mol to kJ/mol
     epsilon = float(opls_param_array[5]) * 4.184
     new_opls_type = OPLSUA_type(
-        opls_type, atomic_number, atomic_name, charge, sigma, epsilon, mass_dic=UA_MASS
+        opls_type,
+        atomic_number,
+        atomic_name,
+        charge,
+        sigma,
+        epsilon,
+        mass_dic=UA_MASS,
+        info_dic=OPLSUA_INFO,
     )
     oplsua_list.append(new_opls_type)
 
@@ -275,7 +290,11 @@ openMM_xml = "<ForceField>\n"
 openMM_xml += "<AtomTypes>\n"
 for opls_type in oplsua_list:
     if FOYER_XML:
-        openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}" def="{opls_type._def}" desc="{opls_type._desc}" doi="{opls_type._doi}"/>\n'
+        # Check if def is empty (https://github.com/mosdef-hub/foyer/issues/179)
+        if not opls_type._def:
+            openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
+        else:
+            openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}" def="{opls_type._def}" desc="{opls_type._desc}" doi="{opls_type._doi}"/>\n'
     else:
         openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
 openMM_xml += "</AtomTypes>\n"
