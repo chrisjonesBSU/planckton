@@ -94,7 +94,17 @@ OPLSUA_INFO = {
         "def": "C",
         "desc": "Types 1 - 65  are for proteins from W. L. Jorgensen  &  J. Tirado-Rives, J. Am. Chem. Soc., 110, 1657 (l988).",
         "doi": "10.1021/ja00214a001",
-    }
+    },
+    "opls_068": {
+        "def": "C[!R;X1][C;!R]",
+        "desc": "CH3 (C2) N-ALKANES",
+        "doi": "10.1021/ja00334a030",
+    },
+    "opls_071": {
+        "def": "C[!R;X2][C;!R][C;!R]",
+        "desc": "CH2 (SP3) ALKANES",
+        "doi": "10.1021/ja00334a030",
+    },
 }
 
 
