@@ -1,111 +1,114 @@
 from dataclasses import dataclass, InitVar
 
+PI = 3.141592653589
 
 FOYER_XML = True
-PI = 3.141592653589
-ff_par = "oplsua.par.edits"
-ff_par_HEADER = 2
-ff_par_OPLS_TYPE_END = 434
+# MIXED UA (still AA dihedrals) AA
+FF_XML_TYPE = "UA"
+if FF_XML_TYPE == "UA":
+    ff_par = "oplsua.par.edits"
+    ff_par_HEADER = 2
+    ff_par_OPLS_TYPE_END = 434
 
-ff_sb = "oplsua.sb.edits"
-ff_sb_HEADER = 2
-ff_sb_HARMONIC_BOND_END = 178
+    ff_sb = "oplsua.sb.edits"
+    ff_sb_HEADER = 2
+    ff_sb_HARMONIC_BOND_END = 178
 
-ff_sb_HARMONIC_ANGLE_START = 179
+    ff_sb_HARMONIC_ANGLE_START = 179
 
-ff_aa_dihedrial = "../oplsaa/oplsaa.par.edits"
-ff_aa_dihedrial_SKIP = 4038
+    ff_dihedrial = "../oplsaa/oplsaa.par.edits"
+    ff_dihedrial_SKIP = 4038
 
 # Most Taken from https://pubs.acs.org/doi/pdf/10.1021/ja00214a001
 # C* (opls type 135) no idea
-UA_MASS = {
-    "C": 12.011,
-    "O": 15.9994,
-    "N": 14.0067,
-    "H": 1.008,
-    "C2": 14.027,
-    "CH": 13.019,
-    "C3": 15.035,
-    "CD": 12.0107,
-    "O2": 15.9994,
-    "N3": 14.0067,
-    "H3": 1.008,
-    "OH": 15.9994,
-    "HO": 1.008,
-    "SH": 32.06,
-    "HS": 1.008,
-    "S": 32.06,
-    "NA": 14.0067,
-    "NB": 14.0067,
-    "CP": 12.011,
-    "CF": 12.011,
-    "CC": 12.011,
-    "CG": 12.011,
-    "CB": 12.011,
-    "N2": 14.0067,
-    "CA": 12.001,
-    "OS": 15.9994,
-    "CT": 12.011,
-    "C4": 16.043,
-    "C9": 14.027,
-    "C8": 13.019,
-    "C7": 12.011,
-    "Ar": 39.948,
-    "Kr": 83.798,
-    "Xe": 131.293,
-    "OW": 15.9994,
-    "HW": 1.008,
-    "NT": "14.0067",
-    "H2": 1.008,
-    "NE": 20.1797,
-    "C*": 13.019,
-    "NC": 14.0067,
-    "CI": 13.019,
-    "CJ": 13.019,
-    "HC": 1.008,
-    "CM": 13.019,
-    "CQ": 13.019,
-    "CK": 13.019,
-    "P": 30.97376,
-    "C1": 13.019,
-    "Li": 6.941,
-    "Na": 22.98977,
-    "K": 39.0983,
-    "Rb": 85.4678,
-    "Cs": 132.9054,
-    "Mg": 24.305,
-    "Ca": 40.08,
-    "Sr": 87.62,
-    "Ba": 137.33,
-    "F-": 18.9984,
-    "I-": 126.9045,
-    "K+": 39.0983,
-    "S-": 32.06,
-    "O-": 15.9994,
-    "CO": 12.011,
-    "HE": 4.0026,
-    "F": 18.9984,
-}
+    MASS = {
+        "C": 12.011,
+        "O": 15.9994,
+        "N": 14.0067,
+        "H": 1.008,
+        "C2": 14.027,
+        "CH": 13.019,
+        "C3": 15.035,
+        "CD": 12.0107,
+        "O2": 15.9994,
+        "N3": 14.0067,
+        "H3": 1.008,
+        "OH": 15.9994,
+        "HO": 1.008,
+        "SH": 32.06,
+        "HS": 1.008,
+        "S": 32.06,
+        "NA": 14.0067,
+        "NB": 14.0067,
+        "CP": 12.011,
+        "CF": 12.011,
+        "CC": 12.011,
+        "CG": 12.011,
+        "CB": 12.011,
+        "N2": 14.0067,
+        "CA": 12.001,
+        "OS": 15.9994,
+        "CT": 12.011,
+        "C4": 16.043,
+        "C9": 14.027,
+        "C8": 13.019,
+        "C7": 12.011,
+        "Ar": 39.948,
+        "Kr": 83.798,
+        "Xe": 131.293,
+        "OW": 15.9994,
+        "HW": 1.008,
+        "NT": "14.0067",
+        "H2": 1.008,
+        "NE": 20.1797,
+        "C*": 13.019,
+        "NC": 14.0067,
+        "CI": 13.019,
+        "CJ": 13.019,
+        "HC": 1.008,
+        "CM": 13.019,
+        "CQ": 13.019,
+        "CK": 13.019,
+        "P": 30.97376,
+        "C1": 13.019,
+        "Li": 6.941,
+        "Na": 22.98977,
+        "K": 39.0983,
+        "Rb": 85.4678,
+        "Cs": 132.9054,
+        "Mg": 24.305,
+        "Ca": 40.08,
+        "Sr": 87.62,
+        "Ba": 137.33,
+        "F-": 18.9984,
+        "I-": 126.9045,
+        "K+": 39.0983,
+        "S-": 32.06,
+        "O-": 15.9994,
+        "CO": 12.011,
+        "HE": 4.0026,
+        "F": 18.9984,
+    }
 
-# Since we have a few PRs to make for this to work in Foyer I don't want to do
-# Anything by hand, so I will make a dictionary to fill out params we need
-OPLSUA_INFO = {
-    "opls_068": {
-        "def": "[C!R;X1][C;!R]",
-        "desc": "CH3 (C2) N-ALKANES",
-        "doi": "10.1021/ja00334a030",
-    },
-    "opls_071": {
-        "def": "[C!R;X2][C;!R]C",
-        "desc": "CH2 (SP3) ALKANES",
-        "doi": "10.1021/ja00334a030",
-    },
-    "opls_075": {
-        "def": "[CR;X2][C;R][C;R]",
-        "desc": "CH (AROM) BENZENOID united atom",
-        "doi": "10.1021/ja00334a030",
-    },
-}
+    # Since we have a few PRs to make for this to work in Foyer I don't want to do
+    # Anything by hand, so I will make a dictionary to fill out params we need
+    OPLS_INFO = {
+        "opls_068": {
+            "def": "[C!R;X1][C;!R]",
+            "desc": "CH3 (C2) N-ALKANES",
+            "doi": "10.1021/ja00334a030",
+        },
+        "opls_071": {
+            "def": "[C!R;X2][C;!R]C",
+            "desc": "CH2 (SP3) ALKANES",
+            "doi": "10.1021/ja00334a030",
+        },
+        "opls_075": {
+            "def": "[CR;X2][C;R][C;R]",
+            "desc": "CH (AROM) BENZENOID united atom",
+            "doi": "10.1021/ja00334a030",
+        },
+    }
 
 
 @dataclass(frozen=False)
@@ -214,8 +217,8 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
         charge,
         sigma,
         epsilon,
-        mass_dic=UA_MASS,
-        info_dic=OPLSUA_INFO,
+        mass_dic=MASS,
+        info_dic=OPLS_INFO,
     )
     oplsua_list.append(new_opls_type)
 
@@ -260,12 +263,12 @@ for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
     harmonic_angle_types.append(new_harmonic_angle)
 
 
-with open(ff_aa_dihedrial, "r") as f:
-    ff_aa_dihedrial_lines = f.readlines()
+with open(ff_dihedrial, "r") as f:
+    ff_dihedrial_lines = f.readlines()
 rb_torsion_list = []
 problem_lines = []
 
-for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:]:
+for line in ff_dihedrial_lines[ff_dihedrial_SKIP:]:
     raw_opls_dihedrial_type = line.strip(" ").strip().split(" ")
     dihedrial_array = list(filter(None, raw_opls_dihedrial_type))
     # Check to see if line is a dummy line or leave blank
@@ -291,7 +294,7 @@ for line in ff_aa_dihedrial_lines[ff_aa_dihedrial_SKIP:]:
     new_rb_torsion = RBTorsion(class_1, class_2, class_3, class_4, *c_coefs)
     rb_torsion_list.append(new_rb_torsion)
 
-print(f"lines skipped in {ff_aa_dihedrial} {problem_lines} \n")
+print(f"lines skipped in {ff_dihedrial} {problem_lines} \n")
 
 
 openMM_xml = "<ForceField>\n"
