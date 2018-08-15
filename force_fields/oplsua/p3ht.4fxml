@@ -1,19 +1,16 @@
 <ForceField>
 <AtomTypes>
- <Type name="opls_068" class="C3" element="C3" mass="15.035" def="C[!R;X1][C;!R]" desc="CH3 (C2) N-ALKANES" doi="10.1021/ja00334a030"/>
- <Type name="opls_071" class="C2" element="C2" mass="14.027" def="C[!R;X2][C;!R]C" desc="CH2 (SP3) ALKANES" doi="10.1021/ja00334a030"/>
+ <Type name="opls_068" class="CT" element="C3" mass="15.035" def="C[!R;X1][C;!R]" desc="CH3 (C2) N-ALKANES" doi="10.1021/ja00334a030"/>
+ <Type name="opls_071" class="CT" element="C2" mass="14.027" def="C[!R;X2][C;!R]C" desc="CH2 (SP3) ALKANES" doi="10.1021/ja00334a030"/>
 </AtomTypes>
 <HarmonicBondForce>
- <Bond class1="C2" class2="C2" length="0.1526" k="217568.00000000003"/>
- <Bond class1="C2" class2="C3" length="0.1526" k="217568.00000000003"/>
+ <Bond class1="CT" class2="CT" length="0.15289999999999998" k="224262.40000000002"/>
 </HarmonicBondForce>
 <HarmonicAngleForce>
- <Angle class1="C2" class2="C2" class3="C2" angle="1.9617500792411313" k="527.184"/>
- <Angle class1="C2" class2="C2" class3="C3" angle="1.9617500792411313" k="527.184"/>
+ <Angle class1="CT" class2="CT" class3="CT" angle="1.9669860669971129" k="488.2728"/>
 </HarmonicAngleForce>
 <RBTorsionForce>
- <Proper class1="C2" class2="C2" class3="C2" class4="C3" c0="1.2755" c1="-0.40650000000000003" c2="11.169" c3="0.542" c4="-12.58" c5="0"/>
- <Proper class1="C2" class2="C2" class3="C2" class4="C2" c0="1.2755" c1="-0.40650000000000003" c2="11.169" c3="0.542" c4="-12.58" c5="0"/>
+ <Proper class1="CT" class2="CT" class3="CT" class4="CT" c0="0.55" c1="-0.35" c2="0.2" c3="-0.4" c4="-0.0" c5="0"/>
 </RBTorsionForce>
 <NonbondedForce coulomb14scale="0.833333" lj14scale="0.5">
  <Atom type="opls_068" charge="0.0" sigma="0.39049999999999996" epsilon="0.7322"/>
