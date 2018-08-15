@@ -1,10 +1,12 @@
 from dataclasses import dataclass, InitVar
+from mass import MASS
 
 PI = 3.141592653589
 
 FOYER_XML = True
 # MIXED UA (still AA dihedrals) AA
-FF_XML_TYPE = "UA"
+FF_XML_TYPE = "AA"
+
 if FF_XML_TYPE == "UA":
     ff_par = "oplsua.par.edits"
     ff_par_HEADER = 2
@@ -19,96 +21,42 @@ if FF_XML_TYPE == "UA":
     ff_dihedrial = "../oplsaa/oplsaa.par.edits"
     ff_dihedrial_SKIP = 4038
 
-# Most Taken from https://pubs.acs.org/doi/pdf/10.1021/ja00214a001
-# C* (opls type 135) no idea
-    MASS = {
-        "C": 12.011,
-        "O": 15.9994,
-        "N": 14.0067,
-        "H": 1.008,
-        "C2": 14.027,
-        "CH": 13.019,
-        "C3": 15.035,
-        "CD": 12.0107,
-        "O2": 15.9994,
-        "N3": 14.0067,
-        "H3": 1.008,
-        "OH": 15.9994,
-        "HO": 1.008,
-        "SH": 32.06,
-        "HS": 1.008,
-        "S": 32.06,
-        "NA": 14.0067,
-        "NB": 14.0067,
-        "CP": 12.011,
-        "CF": 12.011,
-        "CC": 12.011,
-        "CG": 12.011,
-        "CB": 12.011,
-        "N2": 14.0067,
-        "CA": 12.001,
-        "OS": 15.9994,
-        "CT": 12.011,
-        "C4": 16.043,
-        "C9": 14.027,
-        "C8": 13.019,
-        "C7": 12.011,
-        "Ar": 39.948,
-        "Kr": 83.798,
-        "Xe": 131.293,
-        "OW": 15.9994,
-        "HW": 1.008,
-        "NT": "14.0067",
-        "H2": 1.008,
-        "NE": 20.1797,
-        "C*": 13.019,
-        "NC": 14.0067,
-        "CI": 13.019,
-        "CJ": 13.019,
-        "HC": 1.008,
-        "CM": 13.019,
-        "CQ": 13.019,
-        "CK": 13.019,
-        "P": 30.97376,
-        "C1": 13.019,
-        "Li": 6.941,
-        "Na": 22.98977,
-        "K": 39.0983,
-        "Rb": 85.4678,
-        "Cs": 132.9054,
-        "Mg": 24.305,
-        "Ca": 40.08,
-        "Sr": 87.62,
-        "Ba": 137.33,
-        "F-": 18.9984,
-        "I-": 126.9045,
-        "K+": 39.0983,
-        "S-": 32.06,
-        "O-": 15.9994,
-        "CO": 12.011,
-        "HE": 4.0026,
-        "F": 18.9984,
-    }
 
-    # Since we have a few PRs to make for this to work in Foyer I don't want to do
-    # Anything by hand, so I will make a dictionary to fill out params we need
-    OPLS_INFO = {
-        "opls_068": {
-            "def": "[C!R;X1][C;!R]",
-            "desc": "CH3 (C2) N-ALKANES",
-            "doi": "10.1021/ja00334a030",
-        },
-        "opls_071": {
-            "def": "[C!R;X2][C;!R]C",
-            "desc": "CH2 (SP3) ALKANES",
-            "doi": "10.1021/ja00334a030",
-        },
-        "opls_075": {
-            "def": "[CR;X2][C;R][C;R]",
-            "desc": "CH (AROM) BENZENOID united atom",
-            "doi": "10.1021/ja00334a030",
-        },
-    }
+elif FF_XML_TYPE == "AA":
+    ff_par = "../oplsaa/oplsaa.par.edits"
+    ff_par_HEADER = 2
+    ff_par_OPLS_TYPE_END = 4031
+
+    ff_sb = "../oplsaa/oplsaa.sb.edits"
+    ff_sb_HEADER = 1
+    ff_sb_HARMONIC_BOND_END = 451
+
+    ff_sb_HARMONIC_ANGLE_START = 454
+
+    ff_dihedrial = "../oplsaa/oplsaa.par.edits"
+    ff_dihedrial_SKIP = 4038
+
+
+# Since we have a few PRs to make for this to work in Foyer I don't want to do
+# Anything by hand, so I will make a dictionary to fill out params we need
+
+OPLS_INFO = {
+    "opls_068": {
+        "def": "[C!R;X1][C;!R]",
+        "desc": "CH3 (C2) N-ALKANES",
+        "doi": "10.1021/ja00334a030",
+    },
+    "opls_071": {
+        "def": "[C!R;X2][C;!R]C",
+        "desc": "CH2 (SP3) ALKANES",
+        "doi": "10.1021/ja00334a030",
+    },
+    "opls_075": {
+        "def": "[CR;X2][C;R][C;R]",
+        "desc": "CH (AROM) BENZENOID united atom",
+        "doi": "10.1021/ja00334a030",
+    },
+}
 
 
 @dataclass(frozen=False)
@@ -126,7 +74,7 @@ class OPLSUA_type:
     _doi = ""
 
     def __post_init__(self, mass_dic, info_dic):
-        self.mass = mass_dic[self.atomic_name]
+        self.mass = -1  # mass_dic[self.atomic_name]
         try:
             info = info_dic[self.opls_type]
             self._def = info["def"]
@@ -192,7 +140,8 @@ with open(ff_par, "r") as f:
 for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
     raw_opls_type = line.strip(" ").strip().split(" ")
     opls_param_array = list(filter(None, raw_opls_type))
-    if opls_param_array[0] == "#":
+    if opls_param_array[0][0] == "#":
+        problem_lines.append(opls_param_array)
         continue
     opls_type = f"opls_{int(opls_param_array[0]):03d}"
     try:
@@ -227,11 +176,15 @@ print(f"lines skipped in {ff_par} {problem_lines} \n")
 with open(ff_sb, "r") as f:
     ff_sb_lines = f.readlines()
 
-
+problem_lines = []
 harmonic_bond_types = []
 for line in ff_sb_lines[ff_sb_HEADER:ff_sb_HARMONIC_BOND_END]:
     raw_harmonic_bond_type = line.strip(" ").strip().split(" ")
+    if line.startswith(("#", "*", '"')):
+        problem_lines.append(line)
+        continue
     harmonic_bond_array = list(filter(None, raw_harmonic_bond_type))
+    print(harmonic_bond_array)
     # In some cases, there is a space between two classes, ie C -CA this causes an
     # issue when we split things up, so we check to see if we need to concatenate
     # the first two items in our list
@@ -249,6 +202,7 @@ harmonic_angle_types = []
 for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
     # ** seems to indicate a comment
     if line.startswith("**"):
+        problem_lines.append(line)
         continue
     raw_harmonic_angle_type = line.strip(" ").strip().split(" ")
     harmonic_angle_array = list(filter(None, raw_harmonic_angle_type))
@@ -262,6 +216,7 @@ for line in ff_sb_lines[ff_sb_HARMONIC_ANGLE_START:]:
     new_harmonic_angle = HarmonicAngle(class_1, class_2, class_3, k, angle)
     harmonic_angle_types.append(new_harmonic_angle)
 
+print(f"lines skipped in {ff_dihedrial} {problem_lines} \n")
 
 with open(ff_dihedrial, "r") as f:
     ff_dihedrial_lines = f.readlines()
