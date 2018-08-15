@@ -91,13 +91,18 @@ UA_MASS = {
 # Anything by hand, so I will make a dictionary to fill out params we need
 OPLSUA_INFO = {
     "opls_068": {
-        "def": "C[!R;X1][C;!R]",
+        "def": "[C!R;X1][C;!R]",
         "desc": "CH3 (C2) N-ALKANES",
         "doi": "10.1021/ja00334a030",
     },
     "opls_071": {
-        "def": "C[!R;X2][C;!R]C",
+        "def": "[C!R;X2][C;!R]C",
         "desc": "CH2 (SP3) ALKANES",
+        "doi": "10.1021/ja00334a030",
+    },
+    "opls_075": {
+        "def": "[CR;X2][C;R][C;R]",
+        "desc": "CH (AROM) BENZENOID united atom",
         "doi": "10.1021/ja00334a030",
     },
 }
