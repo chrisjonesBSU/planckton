@@ -39,7 +39,7 @@ elif FF_XML_TYPE == "AA":
 elif FF_XML_TYPE == "MIXED":
     ff_par = "oplsua.par.edits"
     ff_par_HEADER = 2
-    ff_par_OPLS_TYPE_END = 434
+    ff_par_OPLS_TYPE_END = 435
 
     ff_sb = "../oplsaa/oplsaa.sb.edits"
     ff_sb_HEADER = 1
@@ -65,10 +65,20 @@ OPLS_INFO = {
         "desc": "CH2 (SP3) ALKANES",
         "doi": "10.1021/ja00334a030",
     },
-    "opls_075": {
+    "opls_230": {
         "def": "[CR;X2][C;R][C;R]",
-        "desc": "CH (AROM) BENZENOID united atom",
-        "doi": "10.1021/ja00334a030",
+        "desc": "Benzene C - 12 site JACS,112,4768-90",
+        "doi": "10.1021/ja00168a022",
+    },
+    "opls_380": {
+        "def": "[CR;X2][C;R][S;R]",
+        "desc": "CE1 in HID,HIE",
+        "doi": "",
+    },
+    "opls_500": {
+        "def": "[SR;X2][C;R][S;R]",
+        "desc": "Taken from AA opls_2003",
+        "doi": "",
     },
 }
 
