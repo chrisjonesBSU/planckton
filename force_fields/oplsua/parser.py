@@ -1,5 +1,5 @@
 from dataclasses import dataclass, InitVar
-from mass import MASS
+from mass import MASS, NON_ELEMENT
 
 PI = 3.141592653589
 
@@ -70,11 +70,7 @@ OPLS_INFO = {
         "desc": "Benzene C - 12 site JACS,112,4768-90",
         "doi": "10.1021/ja00168a022",
     },
-    "opls_380": {
-        "def": "[CR;X2][C;R][S;R]",
-        "desc": "CE1 in HID,HIE",
-        "doi": "",
-    },
+    "opls_380": {"def": "[CR;X2][C;R][S;R]", "desc": "CE1 in HID,HIE", "doi": ""},
     "opls_500": {
         "def": "[SR;X2][C;R][S;R]",
         "desc": "Taken from AA opls_2003",
@@ -88,16 +84,18 @@ class OPLSUA_type:
     opls_type: str
     atomic_number: int
     atomic_name: str
+    atomic_class: str
     charge: float
     sigma: float
     epsilon: float
     mass_dic: InitVar
     info_dic: InitVar
+    element_translate: InitVar
     _def = ""
     _desc = ""
     _doi = ""
 
-    def __post_init__(self, mass_dic, info_dic):
+    def __post_init__(self, mass_dic, info_dic, element_translate):
         self.mass = mass_dic[self.atomic_name]  # Need to make a mass dic for AA
         try:
             info = info_dic[self.opls_type]
@@ -106,7 +104,11 @@ class OPLSUA_type:
             self._doi = info["doi"]
         except KeyError:
             pass
-
+        try:
+            self.atomic_name = element_translate[self.atomic_name]
+        except KeyError:
+            self.atomic_name = self.atomic_name
+            pass
 
 @dataclass(frozen=True)
 class HarmonicBond:
@@ -170,6 +172,7 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
     opls_type = f"opls_{int(opls_param_array[0]):03d}"
     try:
         atomic_name = opls_param_array[2]
+        atomic_class = atomic_name
     except IndexError:
         problem_lines.append(opls_param_array)
         continue
@@ -187,11 +190,13 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
         opls_type,
         atomic_number,
         atomic_name,
+        atomic_class,
         charge,
         sigma,
         epsilon,
         mass_dic=MASS,
         info_dic=OPLS_INFO,
+        element_translate=NON_ELEMENT
     )
     oplsua_list.append(new_opls_type)
 
@@ -284,11 +289,11 @@ for opls_type in oplsua_list:
     if FOYER_XML:
         # Check if def is empty (https://github.com/mosdef-hub/foyer/issues/179)
         if not opls_type._def:
-            openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
+            openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_class}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
         else:
-            openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}" def="{opls_type._def}" desc="{opls_type._desc}" doi="{opls_type._doi}"/>\n'
+            openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_class}" element="{opls_type.atomic_name}" mass="{opls_type.mass}" def="{opls_type._def}" desc="{opls_type._desc}" doi="{opls_type._doi}"/>\n'
     else:
-        openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_name}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
+        openMM_xml += f' <Type name="{opls_type.opls_type}" class="{opls_type.atomic_class}" element="{opls_type.atomic_name}" mass="{opls_type.mass}"/>\n'
 openMM_xml += "</AtomTypes>\n"
 
 # Harmonic Bond Force
