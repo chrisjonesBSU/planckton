@@ -432,6 +432,7 @@
  417 06 CT    0.062     3.800     0.050      C10 in SKF8 (Neopent. + ACE CH3)
  418 06 CH    0.365     3.850     0.080      C15 in SKF8 (FK506 C26 + PHE CB)
  419 99 DU    0.000     0.000     0.000      Dummy for SKF8/5 pert inhibitor
+ 500 16 SA   0.046300  3.600000  0.355000     2-phenylthiophene OPLS-AA/L PULLED FROM AA
       More charge and L-J parameters should be added above this line.
       Fourier coefficients for dihedral angles follow. 
 Type   V0        V1    f   V2    f   V3    f      Description
