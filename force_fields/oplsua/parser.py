@@ -5,7 +5,7 @@ PI = 3.141592653589
 
 FOYER_XML = True
 # MIXED UA (still AA dihedrals) AA
-FF_XML_TYPE = "AA"
+FF_XML_TYPE = "MIXED"
 
 if FF_XML_TYPE == "UA":
     ff_par = "oplsua.par.edits"
@@ -26,6 +26,20 @@ elif FF_XML_TYPE == "AA":
     ff_par = "../oplsaa/oplsaa.par.edits"
     ff_par_HEADER = 2
     ff_par_OPLS_TYPE_END = 4031
+
+    ff_sb = "../oplsaa/oplsaa.sb.edits"
+    ff_sb_HEADER = 1
+    ff_sb_HARMONIC_BOND_END = 451
+
+    ff_sb_HARMONIC_ANGLE_START = 454
+
+    ff_dihedrial = "../oplsaa/oplsaa.par.edits"
+    ff_dihedrial_SKIP = 4038
+
+elif FF_XML_TYPE == "MIXED":
+    ff_par = "oplsua.par.edits"
+    ff_par_HEADER = 2
+    ff_par_OPLS_TYPE_END = 434
 
     ff_sb = "../oplsaa/oplsaa.sb.edits"
     ff_sb_HEADER = 1
@@ -74,7 +88,7 @@ class OPLSUA_type:
     _doi = ""
 
     def __post_init__(self, mass_dic, info_dic):
-        self.mass = -1  # mass_dic[self.atomic_name]
+        self.mass = mass_dic[self.atomic_name]  # Need to make a mass dic for AA
         try:
             info = info_dic[self.opls_type]
             self._def = info["def"]
@@ -291,4 +305,4 @@ for opls_type in oplsua_list:
 openMM_xml += "</NonbondedForce>\n"
 
 openMM_xml += "</ForceField>\n"
-write_xml(openMM_xml, "oplsua.xml")
+write_xml(openMM_xml, f"opls-{FF_XML_TYPE}.xml")
