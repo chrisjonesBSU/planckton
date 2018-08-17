@@ -33,3 +33,4 @@
 * Maybe as an aside, we do some AA sims and paramterize a new OPV CG FF? Skip UA and go onto MS-IBI?
 * I need to make the AA stuff parsed into an openMM xml as well so I can grab AA params more easily 
 * I want to test using this site for AA http://erg.biophys.msu.ru/erg/tpp/ then droping H and see what happens
+* I need to check units on dihedrals!
