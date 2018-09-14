@@ -19,10 +19,10 @@
   <Type name="cu" class="cu" element="C" mass="12.01"/>
   <Type name="cv" class="cv" element="C" mass="12.01"/>
   <Type name="cz" class="cz" element="C" mass="12.01"/>
-  <Type name="h1" class="h1" element="H" mass="1.008"/>
+  <Type name="h1" class="h1" element="_h1" mass="1.008" def="_h1"/>
   <Type name="h2" class="h2" element="H" mass="1.008"/>
   <Type name="h3" class="h3" element="H" mass="1.008"/>
-  <Type name="h4" class="h4" element="H" mass="1.008"/>
+  <Type name="h4" class="h4" element="_h4" mass="1.008" def="_h4"/>
   <Type name="h5" class="h5" element="H" mass="1.008"/>
   <Type name="ha" class="ha" element="_ha" mass="1.008" def="_ha"/>
   <Type name="hc" class="hc" element="_hc" mass="1.008" def="_hc"/>
@@ -63,7 +63,7 @@
   <Type name="o" class="o" element="_o" mass="16.0" def="_o"/>
   <Type name="oh" class="oh" element="O" mass="16.0"/>
   <Type name="os" class="os" element="O" mass="16.0"/>
-  <Type name="ow" class="ow" element="O" mass="16.0"/>
+  <Type name="ow" class="ow" element="_os" mass="16.0" def="_os"/>
   <Type name="p2" class="p2" element="P" mass="30.97"/>
   <Type name="p3" class="p3" element="P" mass="30.97"/>
   <Type name="p4" class="p4" element="P" mass="30.97"/>
