@@ -1,8 +1,8 @@
 <ForceField>
 <AtomTypes>
  <Type name="opls_001" class="C" element="C" mass="12.011"/>
- <Type name="opls_002" class="O" element="O" mass="15.9994"/>
- <Type name="opls_003" class="N" element="N" mass="14.0067"/>
+ <Type name="opls_002" class="O" element="O" mass="15.9994" def="O"/>
+ <Type name="opls_003" class="N" element="N" mass="14.0067" def="N"/>
  <Type name="opls_004" class="H" element="H" mass="1.008"/>
  <Type name="opls_005" class="C2" element="_C2" mass="14.027"/>
  <Type name="opls_006" class="CH" element="_CH" mass="13.019"/>
@@ -219,7 +219,7 @@
  <Type name="opls_227" class="CA" element="CA" mass="12.001"/>
  <Type name="opls_228" class="CA" element="CA" mass="12.001"/>
  <Type name="opls_229" class="HC" element="_HC" mass="1.008"/>
- <Type name="opls_230" class="CS" element="C" mass="12.001" def="[C;r5][C;r5][C;r5]" desc="Benzene C - 12 site JACS,112,4768-90" doi="10.1021/ja00168a022"/>
+ <Type name="opls_230" class="CS" element="C" mass="12.001" def="[C;r5,r6][C;r5,r6][C;r5,r6]" desc="Benzene C - 12 site JACS,112,4768-90" doi="10.1021/ja00168a022"/>
  <Type name="opls_231" class="HC" element="_HC" mass="1.008"/>
  <Type name="opls_232" class="CT" element="_CT" mass="12.011"/>
  <Type name="opls_233" class="HC" element="_HC" mass="1.008"/>
@@ -380,6 +380,7 @@
  <Type name="opls_418" class="CH" element="_CH" mass="13.019"/>
  <Type name="opls_500" class="SA" element="_SA" mass="32.06" def="_SB" desc="Taken from AA opls_2003" doi=""/>
  <Type name="opls_501" class="SA" element="_SB" mass="32.06" def="_SA" desc="Taken from AA opls_2003" doi=""/>
+ <Type name="opls_502" class="SA" element="_SB" mass="32.06" def="S" desc="Taken from AA opls_2003" doi=""/>
 </AtomTypes>
 <HarmonicBondForce>
  <Bond class1="OW" class2="HW" length="0.09572" k="502080.00000000006"/>
@@ -5357,5 +5358,6 @@
  <Atom type="opls_418" charge="0.365" sigma="0.385" epsilon="0.33472"/>
  <Atom type="opls_500" charge="0.046300" sigma="0.36" epsilon="1.48532"/>
  <Atom type="opls_501" charge="0.046300" sigma="0.36" epsilon="1.48532"/>
+ <Atom type="opls_502" charge="0.046300" sigma="0.36" epsilon="1.48532"/>
 </NonbondedForce>
 </ForceField>
