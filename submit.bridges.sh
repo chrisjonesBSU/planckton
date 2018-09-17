@@ -6,7 +6,7 @@
 #SBATCH --time=05:00:00
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --gres gpu:1
+#SBATCH --gres gpu:p100:1
 
 module load singularity
 cd /home/mhenry/planckton
