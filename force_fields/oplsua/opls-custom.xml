@@ -1,7 +1,7 @@
 <ForceField>
 <AtomTypes>
  <Type name="opls_001" class="C" element="C" mass="12.011"/>
- <Type name="opls_002" class="O" element="O" mass="15.9994" def="O"/>
+ <Type name="opls_002" class="O" element="O" mass="15.9994"/>
  <Type name="opls_003" class="N" element="N" mass="14.0067" def="N"/>
  <Type name="opls_004" class="H" element="H" mass="1.008"/>
  <Type name="opls_005" class="C2" element="_C2" mass="14.027"/>
@@ -61,7 +61,7 @@
  <Type name="opls_059" class="O" element="O" mass="15.9994"/>
  <Type name="opls_060" class="CH" element="_CH" mass="13.019"/>
  <Type name="opls_061" class="C2" element="_C2" mass="14.027"/>
- <Type name="opls_062" class="OS" element="OS" mass="15.9994"/>
+ <Type name="opls_062" class="OS" element="OS" mass="15.9994" def="O"/>
  <Type name="opls_063" class="C3" element="_C3" mass="15.035"/>
  <Type name="opls_064" class="CT" element="_CT" mass="12.011"/>
  <Type name="opls_065" class="C3" element="_C3" mass="15.035"/>
@@ -442,6 +442,8 @@
  <Bond class1="OS" class2="NB" length="0.1399" k="386601.60000000003"/>
  <Bond class1="OA" class2="NB" length="0.1399" k="386601.60000000003"/>
  <Bond class1="OS" class2="CR" length="0.1357" k="386601.60000000003"/>
+ <Bond class1="OS" class2="CT" length="0.1357" k="386601.60000000003"/>
+ <Bond class1="OS" class2="CS" length="0.1357" k="386601.60000000003"/>
  <Bond class1="OA" class2="CR" length="0.1357" k="386601.60000000003"/>
  <Bond class1="C2" class2="C2" length="0.1526" k="217568.00000000003"/>
  <Bond class1="C2" class2="C3" length="0.1526" k="217568.00000000003"/>
@@ -683,6 +685,7 @@
  <Bond class1="Si" class2="S" length="0.215" k="120499.20000000001"/>
  <Bond class1="Si" class2="CA" length="0.187" k="234304.00000000003"/>
  <Bond class1="CT" class2="S" length="0.181" k="185769.6"/>
+ <Bond class1="CS" class2="SA" length="0.181" k="185769.6"/>
  <Bond class1="CY" class2="S" length="0.181" k="185769.6"/>
  <Bond class1="CR" class2="SA" length="0.176" k="209200.00000000003"/>
  <Bond class1="CR" class2="S" length="0.176" k="209200.00000000003"/>
