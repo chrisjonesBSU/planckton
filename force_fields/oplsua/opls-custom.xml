@@ -359,7 +359,7 @@
  <Type name="opls_395" class="HE" element="HE" mass="4.0026"/>
  <Type name="opls_396" class="O-" element="_O-" mass="15.9994"/>
  <Type name="opls_397" class="HO" element="HO" mass="1.008"/>
- <Type name="opls_398" class="F" element="F" mass="18.9984"/>
+ <Type name="opls_398" class="F" element="F" mass="18.9984" def="F"/>
  <Type name="opls_399" class="C2" element="_C2" mass="14.027"/>
  <Type name="opls_401" class="CT" element="_CT" mass="12.011"/>
  <Type name="opls_402" class="CT" element="_CT" mass="12.011"/>
