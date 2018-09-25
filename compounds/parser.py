@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-ff_params = "ptb7-frcmod"
+ff_params = "eh-idtbr-frcmod"
 # ff_params = "all-frcmod"
 
 
@@ -17,7 +17,7 @@ def parse_mass(line):
     line = line.strip().split(" ")
     line = list(filter(None, line))
     amber_type, mass, atomic_polarizability = line
-    new_type = Amber_type(amber_type, mass, atomic_polarizability)
+    new_type = AmberType(amber_type, mass, atomic_polarizability)
     print(new_type)
 
 
@@ -26,20 +26,29 @@ def parse_bond(line):
     line = list(filter(None, line))
     if "-" not in line[0]:
         line[:2] = ["".join(line[:2])]
-    class_1, class_2 = line[0].split("-")
-    k, r0 = line[1:]
-    new_bond = Amber_bond(class_1, class_2, k, r0)
+    classes = line[0].split("-")
+    k, r0 = line[1:3]
+    new_bond = AmberBond(*classes, k, r0)
     print(new_bond)
 
-    pass
+
+def parse_angle(line):
+    line = line.strip().split(" ")
+    line = list(filter(None, line))
+    while len(line[0].split("-")) != 3:
+        line[0] += line.pop(1)
+    classes = line[0].split("-")
+    k, theta0 = line[1:3]
+    new_angle = AmberAngle(*classes, k, theta0)
+    print(new_angle)
 
 
-def parse_angle():
-    pass
-
-
-def parse_dihedral():
-    pass
+def parse_dihedral(line):
+    line = line.strip().split(" ")
+    line = list(filter(None, line))
+    while len(line[0].split("-")) != 4:
+        line[0] += line.pop(1)
+    print(line)
 
 
 def parse_improper():
@@ -61,18 +70,27 @@ sections = {
 
 
 @dataclass(frozen=False)
-class Amber_type:
+class AmberType:
     amber_type: str
     mass: float
     atomic_polarizability: float
 
 
 @dataclass(frozen=False)
-class Amber_bond:
+class AmberBond:
     amber_type_1: str
     amber_type_2: str
     k: float
     r0: float
+
+
+@dataclass(frozen=False)
+class AmberAngle:
+    amber_type_1: str
+    amber_type_2: str
+    amber_type_3: str
+    k: float
+    theta0: float
 
 
 def get_section(key, line, f):
