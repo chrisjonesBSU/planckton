@@ -48,11 +48,24 @@ def parse_dihedral(line):
     line = list(filter(None, line))
     while len(line[0].split("-")) != 4:
         line[0] += line.pop(1)
+    classes = line[0].split("-")
+    devider, barrier, phase, periodicity = map(float, line[1:5])
+    k_eff = barrier/devider
+    new_dihedral = AmberDihedral(*classes, k_eff, phase, periodicity)
+    print(new_dihedral)
+
+
+def parse_improper(line):
+    line = line.strip().split(" ")
+    line = list(filter(None, line))
+    while len(line[0].split("-")) != 4:
+        line[0] += line.pop(1)
+    classes = line[0].split("-")
     print(line)
-
-
-def parse_improper():
-    pass
+    barrier, phase, periodicity = map(float, line[1:4])
+    k_eff = barrier
+    new_improper = AmberImproper(*classes, k_eff, phase, periodicity)
+    print(new_improper)
 
 
 def parse_lj():
@@ -91,6 +104,48 @@ class AmberAngle:
     amber_type_3: str
     k: float
     theta0: float
+
+
+@dataclass(frozen=False)
+class AmberDihedral:
+    amber_type_1: str
+    amber_type_2: str
+    amber_type_3: str
+    amber_type_4: str
+    k_eff_1: float
+    phase_1: float
+    periodicty_1: float
+    k_eff_2: float = 0
+    phase_2: float = 0
+    periodicty_2: float = 0
+    k_eff_3: float = 0
+    phase_3: float = 0
+    periodicty_3: float = 0
+    k_eff_4: float = 0
+    phase_4: float = 0
+    periodicty_4: float = 0
+
+
+@dataclass(frozen=False)
+class AmberImproper:
+    amber_type_1: str
+    amber_type_2: str
+    amber_type_3: str
+    amber_type_4: str
+    k_eff: float
+    phase: float
+    periodicty: float
+
+
+@dataclass(frozen=False)
+class AmberImproper:
+    amber_type_1: str
+    amber_type_2: str
+    amber_type_3: str
+    amber_type_4: str
+    k_eff: float
+    phase: float
+    periodicty: float
 
 
 def get_section(key, line, f):
