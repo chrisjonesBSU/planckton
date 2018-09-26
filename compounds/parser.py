@@ -103,9 +103,10 @@ def parse_improper(line):
 def parse_lj(line):
     line = line.strip().split(" ")
     line = list(filter(None, line))
-    amber_type, sigma, epsilon = line
+    amber_type, r_min, epsilon = line
     # Unit conversions
-    sigma, epsilon = ang2nm(sigma), kcal2kJ(epsilon)
+    sigma, epsilon = ang2nm(r_min), kcal2kJ(epsilon)
+    sigma = sigma*2**(-1/6)*2
     new_amber_lj = AmberLJ(amber_type, sigma, epsilon)
     print(new_amber_lj)
 
