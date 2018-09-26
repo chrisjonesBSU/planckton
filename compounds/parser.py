@@ -121,19 +121,30 @@ sections = {
 }
 
 
-@dataclass(frozen=False)
-class AmberType:
-    amber_type: str
-    mass: float
-    atomic_polarizability: float
+class OpenMMXMLField:
+    pass
+    # AtomTypes name, class, element, mass
+    # HarmonicBondForce types, k, r0
+    # HarmonicAngleForce types, k, theta
+    # PeriodicTorsionForce types, periodicity, phase, k
+    # NonbondedForce type, sigma, epsilon
 
 
-@dataclass(frozen=False)
-class AmberBond:
-    amber_type_1: str
-    amber_type_2: str
-    k: float
-    r0: float
+class AtomType(OpenMMXMLField):
+    def __init__(self, name, mass, atomic_polarizability):
+        self.name = name
+        self.mass = mass
+        self._class = name
+        self.element = name[0].uppper()
+        self.atomic_polarizability = atomic_polarizability
+
+
+class HarmonicBondForce(OpenMMXMLField):
+    def __init__(self, class_1, class_2, k, r0):
+        self.class_1 = class_1
+        self.class_2 = class_2
+        self.k = k
+        self.r0 = r0
 
 
 @dataclass(frozen=False)
