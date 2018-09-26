@@ -18,7 +18,7 @@ def kcal2kJ(val):
 
 
 def ang2nm(val):
-    return float(val)/10
+    return float(val) / 10
 
 
 def amber_bond2openmm_bond(val):
@@ -79,7 +79,7 @@ def parse_dihedral(line):
     devider, barrier, phase, periodicity = map(float, line[1:5])
     # http://ambermd.org/doc12/Amber18.pdf#page=247&zoom=auto,-398,716
     # Section 14.1.6 in amber18 manual
-    k_eff = barrier/devider
+    k_eff = barrier / devider
     # Unit conversions
     k_eff, phase = kcal2kJ(k_eff), deg2rad(phase)
     new_dihedral = AmberDihedral(*classes, k_eff, phase, periodicity)
@@ -106,7 +106,7 @@ def parse_lj(line):
     amber_type, r_min, epsilon = line
     # Unit conversions
     sigma, epsilon = ang2nm(r_min), kcal2kJ(epsilon)
-    sigma = sigma*2**(-1/6)*2
+    sigma = sigma * 2 ** (-1 / 6) * 2
     new_amber_lj = AmberLJ(amber_type, sigma, epsilon)
     print(new_amber_lj)
 
@@ -193,7 +193,7 @@ def get_section(key, line, f):
 
 
 if __name__ == "__main__":
-    #ff_params = "eh-idtbr-frcmod"
+    # ff_params = "eh-idtbr-frcmod"
     ff_params = "all-frcmod"
     with open(ff_params) as f:
         line = f.readline()
