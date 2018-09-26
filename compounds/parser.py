@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-ff_params = "eh-idtbr-frcmod"
-# ff_params = "all-frcmod"
+#ff_params = "eh-idtbr-frcmod"
+ff_params = "all-frcmod"
 
 
 class AmberFFParams:
@@ -61,15 +61,18 @@ def parse_improper(line):
     while len(line[0].split("-")) != 4:
         line[0] += line.pop(1)
     classes = line[0].split("-")
-    print(line)
     barrier, phase, periodicity = map(float, line[1:4])
     k_eff = barrier
     new_improper = AmberImproper(*classes, k_eff, phase, periodicity)
     print(new_improper)
 
 
-def parse_lj():
-    pass
+def parse_lj(line):
+    line = line.strip().split(" ")
+    line = list(filter(None, line))
+    amber_type, sigma, epsilon = line
+    new_amber_lj = AmberLJ(amber_type, sigma, epsilon)
+    print(new_amber_lj)
 
 
 sections = {
@@ -138,14 +141,10 @@ class AmberImproper:
 
 
 @dataclass(frozen=False)
-class AmberImproper:
+class AmberLJ:
     amber_type_1: str
-    amber_type_2: str
-    amber_type_3: str
-    amber_type_4: str
-    k_eff: float
-    phase: float
-    periodicty: float
+    sigma: float
+    epsilon: float
 
 
 def get_section(key, line, f):
