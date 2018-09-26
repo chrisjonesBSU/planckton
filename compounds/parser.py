@@ -14,11 +14,11 @@ class AmberFFParams:
 
 
 def kcal2kJ(val):
-    return val * 4.184
+    return float(val) * 4.184
 
 
 def ang2nm(val):
-    return val/10
+    return float(val)/10
 
 
 def amber_bond2openmm_bond(val):
@@ -33,7 +33,7 @@ def amber_angle2openmm_angle(val):
 
 
 def deg2rad(val):
-    return val * (PI / 180)
+    return float(val) * (PI / 180)
 
 
 def parse_mass(line):
