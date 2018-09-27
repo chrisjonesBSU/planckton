@@ -147,44 +147,29 @@ class HarmonicBondForce(OpenMMXMLField):
         self.r0 = r0
 
 
-@dataclass(frozen=False)
-class AmberAngle:
-    amber_type_1: str
-    amber_type_2: str
-    amber_type_3: str
-    k: float
-    theta0: float
+class HarmonicAngleForce(OpenMMXMLField):
+    def __init__(self, class_1, class_2, class_3, k, theta0):
+        self.class_1 = class_1
+        self.class_2 = class_2
+        self.class_3 = class_3
+        self.k = k
+        self.theta0 = theta0
 
 
-@dataclass(frozen=False)
-class AmberDihedral:
-    amber_type_1: str
-    amber_type_2: str
-    amber_type_3: str
-    amber_type_4: str
-    k_eff_1: float
-    phase_1: float
-    periodicty_1: float
-    k_eff_2: float = 0
-    phase_2: float = 0
-    periodicty_2: float = 0
-    k_eff_3: float = 0
-    phase_3: float = 0
-    periodicty_3: float = 0
-    k_eff_4: float = 0
-    phase_4: float = 0
-    periodicty_4: float = 0
+class PeriodicTorsionForceImproper(OpenMMXMLField):
+    def __init__(self, class_1, class_2, class_3, class_4, k, phase, periodicity):
+        self.class_1 = class_1
+        self.class_2 = class_2
+        self.class_3 = class_3
+        self.class_4 = class_4
+        self.k = k
+        self.phase = phase
+        self.periodicity = periodicity
 
 
-@dataclass(frozen=False)
-class AmberImproper:
-    amber_type_1: str
-    amber_type_2: str
-    amber_type_3: str
-    amber_type_4: str
-    k_eff: float
-    phase: float
-    periodicty: float
+class PeriodicTorsionForce(PeriodicTorsionForceImproper):
+    # some logic for classes to merge into one for negitive perodicity
+    pass
 
 
 @dataclass(frozen=False)
