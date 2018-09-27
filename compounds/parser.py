@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-
-
 PI = 3.141592653589
 
 
@@ -40,7 +37,7 @@ def parse_mass(line):
     line = line.strip().split(" ")
     line = list(filter(None, line))
     amber_type, mass, atomic_polarizability = line
-    new_type = AmberType(amber_type, mass, atomic_polarizability)
+    new_type = AtomType(amber_type, mass, atomic_polarizability)
     print(new_type)
 
 
@@ -53,7 +50,7 @@ def parse_bond(line):
     k, r0 = line[1:3]
     # Unit conversions
     k, r0 = amber_bond2openmm_bond(k), ang2nm(r0)
-    new_bond = AmberBond(*classes, k, r0)
+    new_bond = HarmonicBondForce(*classes, k, r0)
     print(new_bond)
 
 
@@ -66,7 +63,7 @@ def parse_angle(line):
     k, theta0 = line[1:3]
     # Unit conversions
     k, theta0 = amber_angle2openmm_angle(k), deg2rad(theta0)
-    new_angle = AmberAngle(*classes, k, theta0)
+    new_angle = HarmonicAngleForce(*classes, k, theta0)
     print(new_angle)
 
 
@@ -82,7 +79,7 @@ def parse_dihedral(line):
     k_eff = barrier / devider
     # Unit conversions
     k_eff, phase = kcal2kJ(k_eff), deg2rad(phase)
-    new_dihedral = AmberDihedral(*classes, k_eff, phase, periodicity)
+    new_dihedral = PeriodicTorsionForce(*classes, k_eff, phase, periodicity)
     print(new_dihedral)
 
 
@@ -96,7 +93,7 @@ def parse_improper(line):
     k_eff = barrier
     # Unit conversions
     k_eff, phase = kcal2kJ(k_eff), deg2rad(phase)
-    new_improper = AmberImproper(*classes, k_eff, phase, periodicity)
+    new_improper = PeriodicTorsionForceImproper(*classes, k_eff, phase, periodicity)
     print(new_improper)
 
 
@@ -107,8 +104,9 @@ def parse_lj(line):
     # Unit conversions
     sigma, epsilon = ang2nm(r_min), kcal2kJ(epsilon)
     sigma = sigma * 2 ** (-1 / 6) * 2
-    new_amber_lj = AmberLJ(amber_type, sigma, epsilon)
+    new_amber_lj = NonbondedForce(amber_type, sigma, epsilon)
     print(new_amber_lj)
+    new_amber_lj.__test__()
 
 
 sections = {
@@ -122,12 +120,17 @@ sections = {
 
 
 class OpenMMXMLField:
-    pass
     # AtomTypes name, class, element, mass
     # HarmonicBondForce types, k, r0
     # HarmonicAngleForce types, k, theta
     # PeriodicTorsionForce types, periodicity, phase, k
     # NonbondedForce type, sigma, epsilon
+    def __repr__(self):
+        attrs = ", ".join("%s = %r" % (k, v) for k, v in self.__dict__.items())
+        return "%s(%s)" % (self.__class__.__name__, attrs)
+
+    def __test__(self):
+        print(tuple([*self.__dict__.values()] + [self.__class__.__name__]))
 
 
 class AtomType(OpenMMXMLField):
@@ -135,7 +138,7 @@ class AtomType(OpenMMXMLField):
         self.name = name
         self.mass = mass
         self._class = name
-        self.element = name[0].uppper()
+        self.element = name[0].upper()
         self.atomic_polarizability = atomic_polarizability
 
 
@@ -172,11 +175,11 @@ class PeriodicTorsionForce(PeriodicTorsionForceImproper):
     pass
 
 
-@dataclass(frozen=False)
-class AmberLJ:
-    amber_type_1: str
-    sigma: float
-    epsilon: float
+class NonbondedForce(OpenMMXMLField):
+    def __init__(self, class_1, sigma, epsilon):
+        self.class_1 = class_1
+        self.sigma = sigma
+        self.epsilon = epsilon
 
 
 def get_section(key, line, f):
