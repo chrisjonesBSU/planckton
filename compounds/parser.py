@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 PI = 3.141592653589
 
 
@@ -106,7 +108,6 @@ def parse_lj(line):
     sigma = sigma * 2 ** (-1 / 6) * 2
     new_amber_lj = NonbondedForce(amber_type, sigma, epsilon)
     print(new_amber_lj)
-    new_amber_lj.__test__()
 
 
 sections = {
@@ -120,17 +121,55 @@ sections = {
 
 
 class OpenMMXMLField:
-    # AtomTypes name, class, element, mass
-    # HarmonicBondForce types, k, r0
-    # HarmonicAngleForce types, k, theta
-    # PeriodicTorsionForce types, periodicity, phase, k
-    # NonbondedForce type, sigma, epsilon
-    def __repr__(self):
-        attrs = ", ".join("%s = %r" % (k, v) for k, v in self.__dict__.items())
-        return "%s(%s)" % (self.__class__.__name__, attrs)
+    instances = set()
+    subclasses = []
+    open_xml_prams = defaultdict(set)
 
-    def __test__(self):
-        print(tuple([*self.__dict__.values()] + [self.__class__.__name__]))
+    def __init__(self, *args, **kwargs):
+        # Creation of an object that is a Pets or subclass of Pets
+        if self.__class__ in (OpenMMXMLField,):
+            # Ignore containers that are not real Pets
+            pass
+        else:
+            self.open_xml_prams[self.__class__].add(self)
+
+    def __init_subclass__(cls, **kwargs):
+        # Creation of a new class that inherits Pets
+        super().__init_subclass__(**kwargs)
+        cls.subclasses.append(cls)
+
+    # __iter__ right now is broken
+    def __iter__(self):
+        # Create iterator with starting index
+        self.index = 0
+        return self
+
+    def __next__(self):
+        try:
+            instances = self.instances[self.index]
+        except IndexError:
+            # The end of a valid iter is StopIteration
+            raise StopIteration
+        else:
+            # If we are not out of instances, increment and return
+            self.index += 1
+            return instances
+
+    def __len__(self):
+        return len(self.instances)
+
+    # Strings are unquoted with this, need to fix
+    def __repr__(self):
+        attrs = ", ".join(f"{k} = {v}" for k, v in self.__dict__.items())
+        return f"{self.__class__.__name__}({attrs})"
+
+    def __hash__(self):
+        return hash(tuple(self.__dict__.values()) + (self.__class__.__name__,))
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.__dict__ == other.__dict__
+        return False
 
 
 class AtomType(OpenMMXMLField):
@@ -140,6 +179,7 @@ class AtomType(OpenMMXMLField):
         self._class = name
         self.element = name[0].upper()
         self.atomic_polarizability = atomic_polarizability
+        super().__init__()
 
 
 class HarmonicBondForce(OpenMMXMLField):
@@ -148,6 +188,7 @@ class HarmonicBondForce(OpenMMXMLField):
         self.class_2 = class_2
         self.k = k
         self.r0 = r0
+        super().__init__()
 
 
 class HarmonicAngleForce(OpenMMXMLField):
@@ -157,6 +198,7 @@ class HarmonicAngleForce(OpenMMXMLField):
         self.class_3 = class_3
         self.k = k
         self.theta0 = theta0
+        super().__init__()
 
 
 class PeriodicTorsionForceImproper(OpenMMXMLField):
@@ -168,6 +210,7 @@ class PeriodicTorsionForceImproper(OpenMMXMLField):
         self.k = k
         self.phase = phase
         self.periodicity = periodicity
+        super().__init__()
 
 
 class PeriodicTorsionForce(PeriodicTorsionForceImproper):
@@ -180,6 +223,7 @@ class NonbondedForce(OpenMMXMLField):
         self.class_1 = class_1
         self.sigma = sigma
         self.epsilon = epsilon
+        super().__init__()
 
 
 def get_section(key, line, f):
@@ -200,3 +244,11 @@ if __name__ == "__main__":
             for key, value in sections.items():
                 get_section(value, line, f)
             line = f.readline()
+    my_openMM = OpenMMXMLField()
+    print(my_openMM.instances)
+    print(my_openMM.subclasses)
+    print(my_openMM.open_xml_prams)
+    for field in my_openMM.open_xml_prams:
+        print(field)
+        for param in my_openMM.open_xml_prams[field]:
+            print(param)
