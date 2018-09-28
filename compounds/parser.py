@@ -39,8 +39,7 @@ def parse_mass(line):
     line = line.strip().split(" ")
     line = list(filter(None, line))
     amber_type, mass, atomic_polarizability = line
-    new_type = AtomType(amber_type, mass, atomic_polarizability)
-    print(new_type)
+    AtomType(amber_type, mass, atomic_polarizability)
 
 
 def parse_bond(line):
@@ -52,8 +51,7 @@ def parse_bond(line):
     k, r0 = line[1:3]
     # Unit conversions
     k, r0 = amber_bond2openmm_bond(k), ang2nm(r0)
-    new_bond = HarmonicBondForce(*classes, k, r0)
-    print(new_bond)
+    HarmonicBondForce(*classes, k, r0)
 
 
 def parse_angle(line):
@@ -65,8 +63,7 @@ def parse_angle(line):
     k, theta0 = line[1:3]
     # Unit conversions
     k, theta0 = amber_angle2openmm_angle(k), deg2rad(theta0)
-    new_angle = HarmonicAngleForce(*classes, k, theta0)
-    print(new_angle)
+    HarmonicAngleForce(*classes, k, theta0)
 
 
 def parse_dihedral(line):
@@ -81,8 +78,7 @@ def parse_dihedral(line):
     k_eff = barrier / devider
     # Unit conversions
     k_eff, phase = kcal2kJ(k_eff), deg2rad(phase)
-    new_dihedral = PeriodicTorsionForce(*classes, k_eff, phase, periodicity)
-    print(new_dihedral)
+    PeriodicTorsionForce(*classes, k_eff, phase, periodicity)
 
 
 def parse_improper(line):
@@ -95,8 +91,7 @@ def parse_improper(line):
     k_eff = barrier
     # Unit conversions
     k_eff, phase = kcal2kJ(k_eff), deg2rad(phase)
-    new_improper = PeriodicTorsionForceImproper(*classes, k_eff, phase, periodicity)
-    print(new_improper)
+    PeriodicTorsionForceImproper(*classes, k_eff, phase, periodicity)
 
 
 def parse_lj(line):
@@ -106,8 +101,7 @@ def parse_lj(line):
     # Unit conversions
     sigma, epsilon = ang2nm(r_min), kcal2kJ(epsilon)
     sigma = sigma * 2 ** (-1 / 6) * 2
-    new_amber_lj = NonbondedForce(amber_type, sigma, epsilon)
-    print(new_amber_lj)
+    NonbondedForce(amber_type, sigma, epsilon)
 
 
 sections = {
@@ -121,9 +115,14 @@ sections = {
 
 
 class OpenMMXMLField:
-    instances = set()
     subclasses = []
-    open_xml_prams = defaultdict(set)
+    open_xml_prams = defaultdict(list)
+
+    def check_period(self):
+        pass
+
+    def gen_xml(self):
+        pass
 
     def __init__(self, *args, **kwargs):
         # Creation of an object that is a Pets or subclass of Pets
@@ -131,36 +130,17 @@ class OpenMMXMLField:
             # Ignore containers that are not real Pets
             pass
         else:
-            self.open_xml_prams[self.__class__].add(self)
+            if self not in self.open_xml_prams[self.__class__]:
+                self.open_xml_prams[self.__class__].append(self)
 
     def __init_subclass__(cls, **kwargs):
         # Creation of a new class that inherits Pets
         super().__init_subclass__(**kwargs)
         cls.subclasses.append(cls)
 
-    # __iter__ right now is broken
-    def __iter__(self):
-        # Create iterator with starting index
-        self.index = 0
-        return self
-
-    def __next__(self):
-        try:
-            instances = self.instances[self.index]
-        except IndexError:
-            # The end of a valid iter is StopIteration
-            raise StopIteration
-        else:
-            # If we are not out of instances, increment and return
-            self.index += 1
-            return instances
-
-    def __len__(self):
-        return len(self.instances)
-
-    # Strings are unquoted with this, need to fix
+    # TODO Strings are unquoted with this, need to fix
     def __repr__(self):
-        attrs = ", ".join(f"{k} = {v}" for k, v in self.__dict__.items())
+        attrs = ", ".join(f"{k} = {v!r}" for k, v in self.__dict__.items())
         return f"{self.__class__.__name__}({attrs})"
 
     def __hash__(self):
@@ -181,6 +161,9 @@ class AtomType(OpenMMXMLField):
         self.atomic_polarizability = atomic_polarizability
         super().__init__()
 
+    def gen_xml(self):
+        return f' <Type name="{self.name}" class="{self._class}" element="{self.element}" mass="{self.mass}" def="" desc="" doi=""/>\n'
+
 
 class HarmonicBondForce(OpenMMXMLField):
     def __init__(self, class_1, class_2, k, r0):
@@ -189,6 +172,9 @@ class HarmonicBondForce(OpenMMXMLField):
         self.k = k
         self.r0 = r0
         super().__init__()
+
+    def gen_xml(self):
+        return f' <Bond class1="{self.class_1}" class2="{self.class_2}" length="{self.r0}" k="{self.k}"/>\n'
 
 
 class HarmonicAngleForce(OpenMMXMLField):
@@ -199,6 +185,9 @@ class HarmonicAngleForce(OpenMMXMLField):
         self.k = k
         self.theta0 = theta0
         super().__init__()
+
+    def gen_xml(self):
+        return f' <Angle class1="{self.class_1}" class2="{self.class_2}" class3="{self.class_3}" angle="{self.theta0}" k="{self.k}"/>\n'
 
 
 class PeriodicTorsionForceImproper(OpenMMXMLField):
@@ -212,10 +201,20 @@ class PeriodicTorsionForceImproper(OpenMMXMLField):
         self.periodicity = periodicity
         super().__init__()
 
+    def gen_xml(self):
+        return f' <Improper k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}" type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}"/>\n'
+
 
 class PeriodicTorsionForce(PeriodicTorsionForceImproper):
-    # some logic for classes to merge into one for negitive perodicity
-    pass
+    # TODO some logic for classes to merge into one for negitive perodicity
+    def check_period(self):
+        if self.periodicity < 0:
+            print("NEG")
+            print(self)
+            print("NEG")
+
+    def gen_xml(self):
+        return f' <Proper k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}" type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}"/>\n'
 
 
 class NonbondedForce(OpenMMXMLField):
@@ -223,7 +222,11 @@ class NonbondedForce(OpenMMXMLField):
         self.class_1 = class_1
         self.sigma = sigma
         self.epsilon = epsilon
+        self.charge = 0
         super().__init__()
+
+    def gen_xml(self):
+        return f' <Atom type="{self.class_1}" charge="{self.charge}" sigma="{self.sigma}" epsilon="{self.epsilon}"/>\n'
 
 
 def get_section(key, line, f):
@@ -245,10 +248,16 @@ if __name__ == "__main__":
                 get_section(value, line, f)
             line = f.readline()
     my_openMM = OpenMMXMLField()
-    print(my_openMM.instances)
-    print(my_openMM.subclasses)
-    print(my_openMM.open_xml_prams)
     for field in my_openMM.open_xml_prams:
         print(field)
-        for param in my_openMM.open_xml_prams[field]:
-            print(param)
+        for idx, param in enumerate(my_openMM.open_xml_prams[field]):
+            if type(param) == PeriodicTorsionForce:
+                if param.periodicity < 0:
+                    print("need to make new class")
+                    how_many = int(abs(param.periodicity))
+                    while how_many > 0:
+                        how_many -= 1
+                        print(my_openMM.open_xml_prams[field][idx + how_many].gen_xml(), end="")
+                    print("done making new classes")
+                else:
+                    print(param.gen_xml(), end="")
