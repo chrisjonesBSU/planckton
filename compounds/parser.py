@@ -234,6 +234,15 @@ def get_section(key, line, f):
             line = f.readline()
 
 
+def merge_phases(list_of_dihedrals):
+    first = list_of_dihedrals[0]
+    xml = f' <Proper type1="{first.class_1}" type2="{first.class_2}" type3="{first.class_3}" type4="{first.class_4}"'
+    for dihedral in list_of_dihedrals:
+        n_period = int(abs(dihedral.periodicity))
+        xml += f' k{n_period}="{dihedral.k}" periodicity{n_period}="{int(abs(dihedral.periodicity))}" phase{n_period}="{dihedral.phase}"'
+    return xml + "/>\n"
+
+
 if __name__ == "__main__":
     # ff_params = "eh-idtbr-frcmod"
     ff_params = "all-frcmod"
@@ -255,12 +264,15 @@ if __name__ == "__main__":
                     how_many = int(abs(field_items[idx].periodicity))
                     skip = how_many + idx
                     print(how_many)
+                    list_to_merge = []
                     while how_many > 0:
                         how_many -= 1
-                        foo = deepcopy(field_items[idx + how_many])
+                        list_to_merge.append(deepcopy(field_items[idx + how_many]))
                         print(field_items[idx + how_many].gen_xml(), end="")
-                    print("done making new classes")
+                    #print("done making new classes")
                     idx = skip - 1  # Since we increment idx at the end
+                    print("merged class")
+                    print(merge_phases(list_to_merge))
                 else:
                     print(field_items[idx].gen_xml(), end="")
             idx += 1
