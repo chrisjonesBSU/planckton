@@ -206,10 +206,7 @@ class PeriodicTorsionForceImproper(OpenMMXMLField):
 class PeriodicTorsionForce(PeriodicTorsionForceImproper):
 
     def gen_xml(self):
-        base = f' <Proper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}"'
-        for n_phase in range(abs(int(self.periodicity))):
-            base += f' k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"'
-
+        base = f' <Proper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4} k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"'
         return base + "/>\n"
 
 
@@ -237,15 +234,15 @@ def get_section(key, line, f):
 def merge_phases(list_of_dihedrals):
     first = list_of_dihedrals[0]
     xml = f' <Proper type1="{first.class_1}" type2="{first.class_2}" type3="{first.class_3}" type4="{first.class_4}"'
-    for dihedral in list_of_dihedrals:
-        n_period = int(abs(dihedral.periodicity))
-        xml += f' k{n_period}="{dihedral.k}" periodicity{n_period}="{int(abs(dihedral.periodicity))}" phase{n_period}="{dihedral.phase}"'
+    for period, dihedral in enumerate(list_of_dihedrals, start=1):
+        xml += f' k{period}="{dihedral.k}" periodicity{period}="{int(abs(dihedral.periodicity))}" phase{period}="{dihedral.phase}"'
     return xml + "/>\n"
 
 
 if __name__ == "__main__":
     # ff_params = "eh-idtbr-frcmod"
     ff_params = "all-frcmod"
+    xml = ""
     with open(ff_params) as f:
         line = f.readline()
         while line:
@@ -254,25 +251,20 @@ if __name__ == "__main__":
             line = f.readline()
     my_openMM = OpenMMXMLField()
     for field in my_openMM.open_xml_prams:
-        print(field)
         field_items = my_openMM.open_xml_prams[field]
         idx = 0
         while idx < len(field_items):
             if type(field_items[idx]) == PeriodicTorsionForce:
                 if field_items[idx].periodicity < 0:
-                    print("need to make new class")
-                    how_many = int(abs(field_items[idx].periodicity))
-                    skip = how_many + idx
-                    print(how_many)
                     list_to_merge = []
-                    while how_many > 0:
-                        how_many -= 1
-                        list_to_merge.append(deepcopy(field_items[idx + how_many]))
-                        print(field_items[idx + how_many].gen_xml(), end="")
-                    #print("done making new classes")
-                    idx = skip - 1  # Since we increment idx at the end
-                    print("merged class")
-                    print(merge_phases(list_to_merge))
+                    while field_items[idx].periodicity < 0:
+                        print(field_items[idx].gen_xml(), end="")
+                        list_to_merge.append(deepcopy(field_items[idx]))
+                        idx += 1
+                    list_to_merge.append(deepcopy(field_items[idx]))  # This will then and the postive one
+                    print(merge_phases(list_to_merge), end="")
                 else:
                     print(field_items[idx].gen_xml(), end="")
+            else:
+                print(field_items[idx].gen_xml(), end="")
             idx += 1
