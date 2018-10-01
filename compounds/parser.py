@@ -1,3 +1,4 @@
+from copy import deepcopy
 from collections import defaultdict
 
 PI = 3.141592653589
@@ -118,9 +119,6 @@ class OpenMMXMLField:
     subclasses = []
     open_xml_prams = defaultdict(list)
 
-    def check_period(self):
-        pass
-
     def gen_xml(self):
         pass
 
@@ -206,15 +204,13 @@ class PeriodicTorsionForceImproper(OpenMMXMLField):
 
 
 class PeriodicTorsionForce(PeriodicTorsionForceImproper):
-    # TODO some logic for classes to merge into one for negitive perodicity
-    def check_period(self):
-        if self.periodicity < 0:
-            print("NEG")
-            print(self)
-            print("NEG")
 
     def gen_xml(self):
-        return f' <Proper k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}" type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}"/>\n'
+        base = f' <Proper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}"'
+        for n_phase in range(abs(int(self.periodicity))):
+            base += f' k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"'
+
+        return base + "/>\n"
 
 
 class NonbondedForce(OpenMMXMLField):
@@ -257,12 +253,14 @@ if __name__ == "__main__":
                 if field_items[idx].periodicity < 0:
                     print("need to make new class")
                     how_many = int(abs(field_items[idx].periodicity))
-                    skip = idx + how_many
+                    skip = how_many + idx
+                    print(how_many)
                     while how_many > 0:
                         how_many -= 1
+                        foo = deepcopy(field_items[idx + how_many])
                         print(field_items[idx + how_many].gen_xml(), end="")
                     print("done making new classes")
-                    idx = skip -1 # Since we increment idx at the end
+                    idx = skip - 1  # Since we increment idx at the end
                 else:
                     print(field_items[idx].gen_xml(), end="")
             idx += 1
