@@ -250,14 +250,19 @@ if __name__ == "__main__":
     my_openMM = OpenMMXMLField()
     for field in my_openMM.open_xml_prams:
         print(field)
-        for idx, param in enumerate(my_openMM.open_xml_prams[field]):
-            if type(param) == PeriodicTorsionForce:
-                if param.periodicity < 0:
+        field_items = my_openMM.open_xml_prams[field]
+        idx = 0
+        while idx < len(field_items):
+            if type(field_items[idx]) == PeriodicTorsionForce:
+                if field_items[idx].periodicity < 0:
                     print("need to make new class")
-                    how_many = int(abs(param.periodicity))
+                    how_many = int(abs(field_items[idx].periodicity))
+                    skip = idx + how_many
                     while how_many > 0:
                         how_many -= 1
-                        print(my_openMM.open_xml_prams[field][idx + how_many].gen_xml(), end="")
+                        print(field_items[idx + how_many].gen_xml(), end="")
                     print("done making new classes")
+                    idx = skip -1 # Since we increment idx at the end
                 else:
-                    print(param.gen_xml(), end="")
+                    print(field_items[idx].gen_xml(), end="")
+            idx += 1
