@@ -286,7 +286,7 @@ if __name__ == "__main__":
                         idx += 1
                     list_to_merge.append(
                         deepcopy(field_items[idx])
-                    )  # This will then and the postive one
+                    )
                     xml += merge_phases(list_to_merge)
                 else:
                     xml += field_items[idx].gen_xml()
