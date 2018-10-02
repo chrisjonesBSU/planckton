@@ -123,7 +123,7 @@ class OpenMMXMLField:
         pass
 
     def __init__(self, *args, **kwargs):
-        # Creation of an object that is a Pets or subclass of Pets
+        # Creation of an object that is a OpenMMXMLField or subclass of OpenMMXMLField
         if self.__class__ in (OpenMMXMLField,):
             # Ignore containers that are not real Pets
             pass
@@ -132,7 +132,7 @@ class OpenMMXMLField:
                 self.open_xml_prams[self.__class__].append(self)
 
     def __init_subclass__(cls, **kwargs):
-        # Creation of a new class that inherits Pets
+        # Creation of a new class that inherits OpenMMXMLField
         super().__init_subclass__(**kwargs)
         cls.subclasses.append(cls)
 
@@ -239,10 +239,15 @@ def merge_phases(list_of_dihedrals):
     return xml + "/>\n"
 
 
+def write_xml(xml_data, xml_name):
+    with open(xml_name, "w") as f:
+        f.write(xml_data)
+
+
 if __name__ == "__main__":
     # ff_params = "eh-idtbr-frcmod"
     ff_params = "all-frcmod"
-    xml = ""
+    xml = "<ForceField>\n"
     with open(ff_params) as f:
         line = f.readline()
         while line:
@@ -258,13 +263,15 @@ if __name__ == "__main__":
                 if field_items[idx].periodicity < 0:
                     list_to_merge = []
                     while field_items[idx].periodicity < 0:
-                        print(field_items[idx].gen_xml(), end="")
                         list_to_merge.append(deepcopy(field_items[idx]))
                         idx += 1
                     list_to_merge.append(deepcopy(field_items[idx]))  # This will then and the postive one
-                    print(merge_phases(list_to_merge), end="")
+                    xml += merge_phases(list_to_merge)
                 else:
-                    print(field_items[idx].gen_xml(), end="")
+                    xml += field_items[idx].gen_xml()
             else:
-                print(field_items[idx].gen_xml(), end="")
+                xml += field_items[idx].gen_xml()
             idx += 1
+    xml += "</ForceField>\n"
+    print(xml)
+    write_xml(xml, "gaff.4fxml")
