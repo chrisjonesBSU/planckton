@@ -217,7 +217,7 @@ class PeriodicTorsionForceImproper(OpenMMXMLField):
         super().__init__()
 
     def gen_xml(self):
-        return f'  <Improper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}" />\n'
+        return f'  <Improper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"/>\n'
 
 class PeriodicTorsionForce(PeriodicTorsionForceImproper):
 
