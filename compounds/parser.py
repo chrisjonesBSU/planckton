@@ -219,8 +219,8 @@ class PeriodicTorsionForceImproper(OpenMMXMLField):
     def gen_xml(self):
         return f'  <Improper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"/>\n'
 
-class PeriodicTorsionForce(PeriodicTorsionForceImproper):
 
+class PeriodicTorsionForce(PeriodicTorsionForceImproper):
     def gen_xml(self):
         return f'  <Proper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"/>\n'
 
@@ -284,7 +284,9 @@ if __name__ == "__main__":
                     while field_items[idx].periodicity < 0:
                         list_to_merge.append(deepcopy(field_items[idx]))
                         idx += 1
-                    list_to_merge.append(deepcopy(field_items[idx]))  # This will then and the postive one
+                    list_to_merge.append(
+                        deepcopy(field_items[idx])
+                    )  # This will then and the postive one
                     xml += merge_phases(list_to_merge)
                 else:
                     xml += field_items[idx].gen_xml()
@@ -292,7 +294,7 @@ if __name__ == "__main__":
                 xml += field_items[idx].gen_xml()
             idx += 1
         else:
-            xml += field_items[idx-1].gen_xml_closer()
+            xml += field_items[idx - 1].gen_xml_closer()
     xml += "</ForceField>\n"
     print(xml)
     write_xml(xml, "gaff.4fxml")
