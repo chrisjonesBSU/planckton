@@ -122,6 +122,12 @@ class OpenMMXMLField:
     def gen_xml(self):
         pass
 
+    def gen_xml_header(self):
+        return f" <{self.xml_field}>\n"
+
+    def gen_xml_closer(self):
+        return f" </{self.xml_field}>\n"
+
     def __init__(self, *args, **kwargs):
         # Creation of an object that is a OpenMMXMLField or subclass of OpenMMXMLField
         if self.__class__ in (OpenMMXMLField,):
@@ -151,6 +157,8 @@ class OpenMMXMLField:
 
 
 class AtomType(OpenMMXMLField):
+    xml_field = "AtomTypes"
+
     def __init__(self, name, mass, atomic_polarizability):
         self.name = name
         self.mass = mass
@@ -160,10 +168,12 @@ class AtomType(OpenMMXMLField):
         super().__init__()
 
     def gen_xml(self):
-        return f' <Type name="{self.name}" class="{self._class}" element="{self.element}" mass="{self.mass}" def="" desc="" doi=""/>\n'
+        return f'  <Type name="{self.name}" class="{self._class}" element="{self.element}" mass="{self.mass}" def="" desc="" doi=""/>\n'
 
 
 class HarmonicBondForce(OpenMMXMLField):
+    xml_field = "HarmonicBondForce"
+
     def __init__(self, class_1, class_2, k, r0):
         self.class_1 = class_1
         self.class_2 = class_2
@@ -172,10 +182,12 @@ class HarmonicBondForce(OpenMMXMLField):
         super().__init__()
 
     def gen_xml(self):
-        return f' <Bond class1="{self.class_1}" class2="{self.class_2}" length="{self.r0}" k="{self.k}"/>\n'
+        return f'  <Bond class1="{self.class_1}" class2="{self.class_2}" length="{self.r0}" k="{self.k}"/>\n'
 
 
 class HarmonicAngleForce(OpenMMXMLField):
+    xml_field = "HarmonicAngleForce"
+
     def __init__(self, class_1, class_2, class_3, k, theta0):
         self.class_1 = class_1
         self.class_2 = class_2
@@ -185,14 +197,19 @@ class HarmonicAngleForce(OpenMMXMLField):
         super().__init__()
 
     def gen_xml(self):
-        return f' <Angle class1="{self.class_1}" class2="{self.class_2}" class3="{self.class_3}" angle="{self.theta0}" k="{self.k}"/>\n'
+        return f'  <Angle class1="{self.class_1}" class2="{self.class_2}" class3="{self.class_3}" angle="{self.theta0}" k="{self.k}"/>\n'
 
 
 class PeriodicTorsionForceImproper(OpenMMXMLField):
+    xml_field = "PeriodicTorsionForce"
+    # HERE BE DRAGONS
+    # Amber defines the central atom as the 3rd
+    # OpenMM XML defines the central atom ast the 1st
+
     def __init__(self, class_1, class_2, class_3, class_4, k, phase, periodicity):
-        self.class_1 = class_1
+        self.class_1 = class_3  # Note the swap
         self.class_2 = class_2
-        self.class_3 = class_3
+        self.class_3 = class_1  # Note the swap
         self.class_4 = class_4
         self.k = k
         self.phase = phase
@@ -200,17 +217,17 @@ class PeriodicTorsionForceImproper(OpenMMXMLField):
         super().__init__()
 
     def gen_xml(self):
-        return f' <Improper k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}" type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}"/>\n'
-
+        return f'  <Improper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}" />\n'
 
 class PeriodicTorsionForce(PeriodicTorsionForceImproper):
 
     def gen_xml(self):
-        base = f' <Proper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4} k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"'
-        return base + "/>\n"
+        return f'  <Proper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"/>\n'
 
 
 class NonbondedForce(OpenMMXMLField):
+    xml_field = "NonbondedForce"
+
     def __init__(self, class_1, sigma, epsilon):
         self.class_1 = class_1
         self.sigma = sigma
@@ -219,7 +236,7 @@ class NonbondedForce(OpenMMXMLField):
         super().__init__()
 
     def gen_xml(self):
-        return f' <Atom type="{self.class_1}" charge="{self.charge}" sigma="{self.sigma}" epsilon="{self.epsilon}"/>\n'
+        return f'  <Atom type="{self.class_1}" charge="{self.charge}" sigma="{self.sigma}" epsilon="{self.epsilon}"/>\n'
 
 
 def get_section(key, line, f):
@@ -233,7 +250,7 @@ def get_section(key, line, f):
 
 def merge_phases(list_of_dihedrals):
     first = list_of_dihedrals[0]
-    xml = f' <Proper type1="{first.class_1}" type2="{first.class_2}" type3="{first.class_3}" type4="{first.class_4}"'
+    xml = f'  <Proper type1="{first.class_1}" type2="{first.class_2}" type3="{first.class_3}" type4="{first.class_4}"'
     for period, dihedral in enumerate(list_of_dihedrals, start=1):
         xml += f' k{period}="{dihedral.k}" periodicity{period}="{int(abs(dihedral.periodicity))}" phase{period}="{dihedral.phase}"'
     return xml + "/>\n"
@@ -258,6 +275,8 @@ if __name__ == "__main__":
     for field in my_openMM.open_xml_prams:
         field_items = my_openMM.open_xml_prams[field]
         idx = 0
+        # Make header
+        xml += field_items[0].gen_xml_header()
         while idx < len(field_items):
             if type(field_items[idx]) == PeriodicTorsionForce:
                 if field_items[idx].periodicity < 0:
@@ -272,6 +291,8 @@ if __name__ == "__main__":
             else:
                 xml += field_items[idx].gen_xml()
             idx += 1
+        else:
+            xml += field_items[idx-1].gen_xml_closer()
     xml += "</ForceField>\n"
     print(xml)
     write_xml(xml, "gaff.4fxml")
