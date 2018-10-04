@@ -163,12 +163,13 @@ class AtomType(OpenMMXMLField):
         self.name = name
         self.mass = mass
         self._class = name
-        self.element = name[0].upper()
+        # self.element = name[0].upper()
+        self.element = f"_{name}"
         self.atomic_polarizability = atomic_polarizability
         super().__init__()
 
     def gen_xml(self):
-        return f'  <Type name="{self.name}" class="{self._class}" element="{self.element}" mass="{self.mass}" def="" desc="" doi=""/>\n'
+        return f'  <Type name="{self.name}" class="{self._class}" element="{self.element}" mass="{self.mass}" def="{self.element}" desc="" doi=""/>\n'
 
 
 class HarmonicBondForce(OpenMMXMLField):
@@ -217,12 +218,12 @@ class PeriodicTorsionForceImproper(OpenMMXMLField):
         super().__init__()
 
     def gen_xml(self):
-        return f'  <Improper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"/>\n'
+        return f'  <Improper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{int(self.periodicity)}" phase1="{self.phase}"/>\n'
 
 
 class PeriodicTorsionForce(PeriodicTorsionForceImproper):
     def gen_xml(self):
-        return f'  <Proper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{self.periodicity}" phase1="{self.phase}"/>\n'
+        return f'  <Proper type1="{self.class_1}" type2="{self.class_2}" type3="{self.class_3}" type4="{self.class_4}" k1="{self.k}" periodicity1="{int(self.periodicity)}" phase1="{self.phase}"/>\n'
 
 
 class NonbondedForce(OpenMMXMLField):
@@ -237,6 +238,10 @@ class NonbondedForce(OpenMMXMLField):
 
     def gen_xml(self):
         return f'  <Atom type="{self.class_1}" charge="{self.charge}" sigma="{self.sigma}" epsilon="{self.epsilon}"/>\n'
+
+    def gen_xml_header(self):
+        #  TODO is this correct?
+        return f' <{self.xml_field} coulomb14scale="0.833333" lj14scale="0.5">\n'
 
 
 def get_section(key, line, f):
