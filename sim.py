@@ -8,13 +8,13 @@ from cme_utils.manip.ff_from_foyer import set_coeffs
 file_name_opls = "ptb7_with_ff_opls.hoomdxml"
 file_name_gaff = "test_typing.hoomdxml"
 
-for file_name in [file_name_opls, file_name_gaff]:
+for file_name in [file_name_gaff]:
     if hoomd.context.exec_conf is None:
-        hoomd.context.initialize("--single-mpi")
+        hoomd.context.initialize("--single-mpi --mode=cpu")
     with hoomd.context.SimulationContext():
         system = init_wrapper(file_name)
         nl = hoomd.md.nlist.cell()
-        system = set_coeffs(file_name, system, nl)
+        system = set_coeffs(file_name, system, nl, e_factor=0)
         integrator_mode = hoomd.md.integrate.mode_standard(dt=0.00001)
         rigid = hoomd.group.rigid_center()
         nonrigid = hoomd.group.nonrigid()
@@ -32,7 +32,7 @@ for file_name in [file_name_opls, file_name_gaff]:
             "pair_lj_energy",
             "bond_harmonic_energy",
             "angle_harmonic_energy",
-            "dihedral_opls_energy",
+            "dihedral_table_energy",
         ]
         hoomd.analyze.log(
             "alkanes.log",
@@ -41,4 +41,4 @@ for file_name in [file_name_opls, file_name_gaff]:
             header_prefix="#",
             overwrite=True,
         )
-        hoomd.run(1e1)
+        hoomd.run(1e7)
