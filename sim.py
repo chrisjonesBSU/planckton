@@ -10,11 +10,11 @@ file_name_gaff = "test_typing.hoomdxml"
 
 for file_name in [file_name_gaff]:
     if hoomd.context.exec_conf is None:
-        hoomd.context.initialize("--single-mpi --mode=cpu")
+        hoomd.context.initialize("--single-mpi --mode=gpu")
     with hoomd.context.SimulationContext():
         system = init_wrapper(file_name)
         nl = hoomd.md.nlist.cell()
-        system = set_coeffs(file_name, system, nl, e_factor=0)
+        system = set_coeffs(file_name, system, nl, e_factor=1.0)
         integrator_mode = hoomd.md.integrate.mode_standard(dt=0.00001)
         rigid = hoomd.group.rigid_center()
         nonrigid = hoomd.group.nonrigid()
@@ -41,4 +41,13 @@ for file_name in [file_name_gaff]:
             header_prefix="#",
             overwrite=True,
         )
-        hoomd.run(1e7)
+        integrator.randomize_velocities(seed=42)
+        hoomd.run(1e6)
+        integrator_mode.set_params(dt=0.0001)
+        hoomd.run(3e6)
+        integrator_mode.set_params(dt=0.0005)
+        hoomd.run(5e6)
+        integrator_mode.set_params(dt=0.005)
+        hoomd.run(1e6)
+
+
