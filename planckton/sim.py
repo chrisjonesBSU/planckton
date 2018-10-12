@@ -13,6 +13,7 @@ file_name_gaff = "init.hoomdxml"
 class Simulation():
     def __init__(self, input_xml):
         self.input_xml = input_xml
+        self.e_factor
         pass
 
     def run(self):
