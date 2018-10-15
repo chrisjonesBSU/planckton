@@ -10,14 +10,25 @@ file_name_opls = "ptb7_with_ff_opls.hoomdxml"
 file_name_gaff = "init.hoomdxml"
 
 
-class Simulation():
-    def __init__(self, input_xml, kT, e_factor=1.0, tau=5.0, gsd_write=1e6, log_write=1e5):
+class Simulation:
+    def __init__(
+        self,
+        input_xml,
+        kT,
+        e_factor=1.0,
+        tau=5.0,
+        gsd_write=1e6,
+        log_write=1e5,
+        shrink_time=1e6,
+        shrink_factor=5,
+    ):
         self.input_xml = input_xml
         self.e_factor = e_factor
         self.tau = tau
         self.kT = kT
         self.gsd_write = gsd_write
         self.log_write = log_write
+        self.shrink_time = shrink_time
 
     def run(self):
         if hoomd.context.exec_conf is None:
@@ -35,12 +46,22 @@ class Simulation():
             nonrigid = hoomd.group.nonrigid()
             both_group = hoomd.group.union("both", rigid, nonrigid)
             all_particles = hoomd.group.all()
-            integrator = hoomd.md.integrate.nvt(group=both_group, tau=self.tau, kT=self.kT)
+            integrator = hoomd.md.integrate.nvt(
+                group=both_group, tau=self.tau, kT=self.kT
+            )
             hoomd.dump.gsd(
-                filename="trajectory.gsd", period=self.gsd_write, group=all_particles, overwrite=False, phase=0
+                filename="trajectory.gsd",
+                period=self.gsd_write,
+                group=all_particles,
+                overwrite=False,
+                phase=0,
             )
             gsd_restart = hoomd.dump.gsd(
-                "restart.gsd", period=self.gsd_write, group=all_particles, truncate=True, phase=0
+                "restart.gsd",
+                period=self.gsd_write,
+                group=all_particles,
+                truncate=True,
+                phase=0,
             )
             log_quantities = [
                 "temperature",
@@ -59,10 +80,15 @@ class Simulation():
                 period=self.log_write,
                 header_prefix="#",
                 overwrite=False,
-                phase=0
+                phase=0,
             )
             integrator.randomize_velocities(seed=42)
-            hoomd.run(1e6)
+            desired_box_dim = system.box.Lx / self.shrink_factor
+            size_variant = hoomd.variant.linear_interp(
+                [(0, system.box.Lx), (self.shrink_time, desired_box_dim)]
+            )
+            hoomd.update.box_resize(L=size_variant)
+            hoomd.run(self.shrink_time)
             integrator_mode.set_params(dt=0.001)
             hoomd.run(1e6)
 

@@ -37,11 +37,12 @@ class Pack:
 
     def pack(self):
         L = self._calculate_L()
+        L *= 5  # Extra factor to make packing faster, will shrink it out
         print(L)
         box = mb.packing.fill_box(
             self.compound,
             n_compounds=self.n_compounds,
-            #box=[-L/2, -L/2, -L/2, L/2, L/2, L/2],
+            # box=[-L/2, -L/2, -L/2, L/2, L/2, L/2],
             box=[L, L, L],
             overlap=0.2,
             edge=0.5,
@@ -62,7 +63,7 @@ class Pack:
         )
         # Conversion from (amu/(g/cm^3))**(1/3) to ang
         L = (total_mass / self.density) ** (1 / 3) * 1.1841763
-        L /= 10 # convert ang to nm
+        L /= 10  # convert ang to nm
         return L
 
 
@@ -92,7 +93,7 @@ def test_typing(compound_file, ff_file):
 
 compound_file = "compounds/itic_typed.mol2"
 ff_file = "compounds/gaff.4fxml"
-#test_typing(compound_file, ff_file)
+# test_typing(compound_file, ff_file)
 itic = Compound(compound_file)
-packer = Pack(itic, 50, .3)
+packer = Pack(itic, 50, 1)
 packer.pack()
