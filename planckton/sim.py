@@ -29,6 +29,7 @@ class Simulation:
         self.gsd_write = gsd_write
         self.log_write = log_write
         self.shrink_time = shrink_time
+        self.shrink_factor = shrink_factor
 
     def run(self):
         if hoomd.context.exec_conf is None:
@@ -89,8 +90,8 @@ class Simulation:
             )
             hoomd.update.box_resize(L=size_variant)
             hoomd.run(self.shrink_time)
-            integrator_mode.set_params(dt=0.001)
-            hoomd.run(1e6)
+            integrator_mode.set_params(dt=0.0005)
+            hoomd.run(5e6)
 
 
 if __name__ == "__main__":
