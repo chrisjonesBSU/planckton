@@ -62,6 +62,7 @@ class Pack:
         )
         # Conversion from (amu/(g/cm^3))**(1/3) to ang
         L = (total_mass / self.density) ** (1 / 3) * 1.1841763
+        L /= 10 # convert ang to nm
         return L
 
 
@@ -93,5 +94,5 @@ compound_file = "compounds/itic_typed.mol2"
 ff_file = "compounds/gaff.4fxml"
 #test_typing(compound_file, ff_file)
 itic = Compound(compound_file)
-packer = Pack(itic, 50, 100)
+packer = Pack(itic, 50, .3)
 packer.pack()
