@@ -11,28 +11,36 @@ file_name_gaff = "init.hoomdxml"
 
 
 class Simulation():
-    def __init__(self, input_xml):
+    def __init__(self, input_xml, kT, e_factor=1.0, tau=5.0, gsd_write=1e6, log_write=1e5):
         self.input_xml = input_xml
-        self.e_factor
-        pass
+        self.e_factor = e_factor
+        self.tau = tau
+        self.kT = kT
+        self.gsd_write = gsd_write
+        self.log_write = log_write
 
     def run(self):
         if hoomd.context.exec_conf is None:
             hoomd.context.initialize("--single-mpi --mode=gpu")
         with hoomd.context.SimulationContext():
+            # TODO Robust restart logic when reading in rigid bodies
             system = init_wrapper(self.input_xml)
             nl = hoomd.md.nlist.cell()
             logging.info("Setting coefs")
             hoomd.util.quiet_status()
-            system = set_coeffs(self.input_xml, system, nl, e_factor=1.0)
+            system = set_coeffs(self.input_xml, system, nl, self.e_factor)
             hoomd.util.unquiet_status()
             integrator_mode = hoomd.md.integrate.mode_standard(dt=0.0001)
             rigid = hoomd.group.rigid_center()
             nonrigid = hoomd.group.nonrigid()
             both_group = hoomd.group.union("both", rigid, nonrigid)
-            integrator = hoomd.md.integrate.nvt(group=both_group, tau=0.1, kT=2.0)
+            all_particles = hoomd.group.all()
+            integrator = hoomd.md.integrate.nvt(group=both_group, tau=self.tau, kT=self.kT)
             hoomd.dump.gsd(
-                filename="out.gsd", period=1e3, group=hoomd.group.all(), overwrite=True
+                filename="trajectory.gsd", period=self.gsd_write, group=all_particles, overwrite=False, phase=0
+            )
+            gsd_restart = hoomd.dump.gsd(
+                "restart.gsd", period=self.gsd_write, group=all_particles, truncate=True, phase=0
             )
             log_quantities = [
                 "temperature",
@@ -46,17 +54,19 @@ class Simulation():
                 "dihedral_table_energy",
             ]
             hoomd.analyze.log(
-                "alkanes.log",
+                "trajectory.log",
                 quantities=log_quantities,
-                period=1e5,
+                period=self.log_write,
                 header_prefix="#",
-                overwrite=True,
+                overwrite=False,
+                phase=0
             )
             integrator.randomize_velocities(seed=42)
             hoomd.run(1e6)
             integrator_mode.set_params(dt=0.001)
             hoomd.run(1e6)
-            #integrator_mode.set_params(dt=0.0005)
-            #hoomd.run(5e6)
-            #integrator_mode.set_params(dt=0.005)
-            #hoomd.run(1e6)
+
+
+if __name__ == "__main__":
+    my_sim = Simulation("init.hoomdxml", kT=3.0, gsd_write=1e5, log_write=1e5)
+    my_sim.run()
