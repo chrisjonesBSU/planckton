@@ -54,7 +54,7 @@ class Simulation:
                 filename="trajectory.gsd",
                 period=self.gsd_write,
                 group=all_particles,
-                overwrite=False,
+                overwrite=True,
                 phase=0,
             )
             gsd_restart = hoomd.dump.gsd(
@@ -80,7 +80,7 @@ class Simulation:
                 quantities=log_quantities,
                 period=self.log_write,
                 header_prefix="#",
-                overwrite=False,
+                overwrite=True,
                 phase=0,
             )
             integrator.randomize_velocities(seed=42)
