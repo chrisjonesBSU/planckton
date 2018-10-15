@@ -36,7 +36,7 @@ RUN apt update && \
     conda install -y --only-deps -c omnia -c cmelab -c mosdef mbuild foyer python=3.6 && \
     conda install -y -c glotzer freud signac signac-flow gsd && \
     conda clean -tipsy && \
-    pip install --no-cache-dir git+https://bitbucket.org/cmelab/cme_utils.git git+https://github.com/mikemhenry/foyer.git@mike/plankton git+https://github.com/mikemhenry/mbuild.git@mike/plankton
+    pip install --no-cache-dir --upgrade git+https://bitbucket.org/cmelab/cme_utils.git git+https://github.com/mikemhenry/foyer.git@mike/plankton git+https://github.com/mikemhenry/mbuild.git@mike/plankton
 
 # Install HOOMD
 # Runtime
