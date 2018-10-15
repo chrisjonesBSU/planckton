@@ -28,8 +28,12 @@ class Pack:
     ):
         if not isinstance(compound, (list, set)):
             self.compound = [compound]
+        else:
+            self.compound = compound
         if n_compounds is not None and not isinstance(n_compounds, (list, set)):
             self.n_compounds = [n_compounds]
+        else:
+            self.n_compounds = n_compounds
 
         self.density = density
         self.ff_file = ff_file
