@@ -91,9 +91,10 @@ def test_typing(compound_file, ff_file):
     )
 
 
-compound_file = "compounds/itic_typed.mol2"
-ff_file = "compounds/gaff.4fxml"
-# test_typing(compound_file, ff_file)
-itic = Compound(compound_file)
-packer = Pack(itic, 50, 1)
-packer.pack()
+if __name__ == "__main__":
+    compound_file = "compounds/itic_typed.mol2"
+    ff_file = "compounds/gaff.4fxml"
+    # test_typing(compound_file, ff_file)
+    itic = Compound(compound_file)
+    packer = Pack(itic, 50, 1)
+    packer.pack()
