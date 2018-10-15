@@ -14,14 +14,16 @@ for file_name in [file_name_gaff]:
     with hoomd.context.SimulationContext():
         system = init_wrapper(file_name)
         nl = hoomd.md.nlist.cell()
+        hoomd.util.quiet_status()
         system = set_coeffs(file_name, system, nl, e_factor=1.0)
+        hoomd.util.unquiet_status()
         integrator_mode = hoomd.md.integrate.mode_standard(dt=0.00001)
         rigid = hoomd.group.rigid_center()
         nonrigid = hoomd.group.nonrigid()
         both_group = hoomd.group.union("both", rigid, nonrigid)
         integrator = hoomd.md.integrate.nvt(group=both_group, tau=0.1, kT=2.0)
         hoomd.dump.gsd(
-            filename="alkanes.gsd", period=1e5, group=hoomd.group.all(), overwrite=True
+            filename="out.gsd", period=1e5, group=hoomd.group.all(), overwrite=True
         )
         log_quantities = [
             "temperature",
