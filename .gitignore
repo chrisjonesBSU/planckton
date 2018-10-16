@@ -4,6 +4,7 @@ bridges/
 *frcmod
 *.mol2
 *.hoomdxml
+*.simg
 # Created by https://www.gitignore.io/api/vim,python
 
 ### Python ###

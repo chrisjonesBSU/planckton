@@ -89,9 +89,9 @@ class Simulation:
                 [(0, system.box.Lx), (self.shrink_time, desired_box_dim)]
             )
             hoomd.update.box_resize(L=size_variant)
-            hoomd.run(self.shrink_time)
-            integrator_mode.set_params(dt=0.0005)
-            hoomd.run(5e6)
+            hoomd.run(1000)
+            #integrator_mode.set_params(dt=0.0005)
+            #hoomd.run(5e6)
 
 
 if __name__ == "__main__":
