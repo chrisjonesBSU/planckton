@@ -21,6 +21,7 @@ class Simulation:
         log_write=1e5,
         shrink_time=1e6,
         shrink_factor=5,
+        n_steps=1e3
     ):
         self.input_xml = input_xml
         self.e_factor = e_factor
@@ -30,6 +31,7 @@ class Simulation:
         self.log_write = log_write
         self.shrink_time = shrink_time
         self.shrink_factor = shrink_factor
+        self.n_steps = n_steps
 
     def run(self):
         if hoomd.context.exec_conf is None:
@@ -89,9 +91,7 @@ class Simulation:
                 [(0, system.box.Lx), (self.shrink_time, desired_box_dim)]
             )
             hoomd.update.box_resize(L=size_variant)
-            hoomd.run(1000)
-            #integrator_mode.set_params(dt=0.0005)
-            #hoomd.run(5e6)
+            hoomd.run(self.n_steps)
 
 
 if __name__ == "__main__":
