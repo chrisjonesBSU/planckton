@@ -21,7 +21,8 @@ class Simulation:
         log_write=1e5,
         shrink_time=1e6,
         shrink_factor=5,
-        n_steps=1e3
+        n_steps=1e3,
+        mode="gpu"
     ):
         self.input_xml = input_xml
         self.e_factor = e_factor
@@ -32,10 +33,12 @@ class Simulation:
         self.shrink_time = shrink_time
         self.shrink_factor = shrink_factor
         self.n_steps = n_steps
+        self.mode = mode
 
     def run(self):
         if hoomd.context.exec_conf is None:
-            hoomd.context.initialize("--single-mpi --mode=gpu")
+            hoomd_args = f"--single-mpi --mode={self.mode}"
+            hoomd.context.initialize(hoomd_args)
         with hoomd.context.SimulationContext():
             # TODO Robust restart logic when reading in rigid bodies
             system = init_wrapper(self.input_xml)
