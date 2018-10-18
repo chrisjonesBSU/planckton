@@ -1,3 +1,4 @@
+import os
 import logging
 import hoomd.deprecated
 import hoomd.md
@@ -5,9 +6,6 @@ import hoomd.dump
 import hoomd.data
 from cme_utils.manip.convert_rigid import init_wrapper
 from cme_utils.manip.ff_from_foyer import set_coeffs
-
-file_name_opls = "ptb7_with_ff_opls.hoomdxml"
-file_name_gaff = "init.hoomdxml"
 
 
 class Simulation:
@@ -41,7 +39,10 @@ class Simulation:
             hoomd.context.initialize(hoomd_args)
         with hoomd.context.SimulationContext():
             # TODO Robust restart logic when reading in rigid bodies
-            system = init_wrapper(self.input_xml)
+            if os.path.isfile("restart.gsd"):
+                system = hoomd.init.read_gsd(filename=None, restart="restart.gsd")
+            else:
+                system = init_wrapper(self.input_xml)
             nl = hoomd.md.nlist.cell()
             logging.info("Setting coefs")
             hoomd.util.quiet_status()
@@ -59,7 +60,7 @@ class Simulation:
                 filename="trajectory.gsd",
                 period=self.gsd_write,
                 group=all_particles,
-                overwrite=True,
+                overwrite=False,
                 phase=0,
             )
             gsd_restart = hoomd.dump.gsd(
@@ -85,16 +86,23 @@ class Simulation:
                 quantities=log_quantities,
                 period=self.log_write,
                 header_prefix="#",
-                overwrite=True,
+                overwrite=False,
                 phase=0,
             )
             integrator.randomize_velocities(seed=42)
             desired_box_dim = system.box.Lx / self.shrink_factor
             size_variant = hoomd.variant.linear_interp(
-                [(0, system.box.Lx), (self.shrink_time, desired_box_dim)]
+                [(0, system.box.Lx), (self.shrink_time, desired_box_dim)], zero=0
             )
             hoomd.update.box_resize(L=size_variant)
-            hoomd.run(self.n_steps)
+            hoomd.run_upto(self.shrink_time)
+            integrator_mode.set_params(dt=0.0001)
+            try:
+                hoomd.run_upto(self.n_steps+1, limit_multiple=self.gsd_write)
+            except hoomd.WalltimeLimitReached:
+                pass
+            finally:
+                gsd_restart.write_restart()
 
 
 if __name__ == "__main__":
