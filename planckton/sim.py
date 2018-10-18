@@ -96,6 +96,8 @@ class Simulation:
             )
             hoomd.update.box_resize(L=size_variant)
             hoomd.run_upto(self.shrink_time)
+            # After shrinking, reset velocities
+            integrator.randomize_velocities(seed=42)
             integrator_mode.set_params(dt=0.0001)
             try:
                 hoomd.run_upto(self.n_steps+1, limit_multiple=self.gsd_write)
