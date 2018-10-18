@@ -1,7 +1,7 @@
 from copy import deepcopy
 from collections import defaultdict
 
-PI = 3.141592653589
+PI = 3.141_592_653_589
 
 
 class AmberFFParams:
@@ -289,9 +289,7 @@ if __name__ == "__main__":
                     while field_items[idx].periodicity < 0:
                         list_to_merge.append(deepcopy(field_items[idx]))
                         idx += 1
-                    list_to_merge.append(
-                        deepcopy(field_items[idx])
-                    )
+                    list_to_merge.append(deepcopy(field_items[idx]))
                     xml += merge_phases(list_to_merge)
                 else:
                     xml += field_items[idx].gen_xml()

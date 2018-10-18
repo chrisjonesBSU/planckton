@@ -1,7 +1,7 @@
 from dataclasses import dataclass, InitVar
 from mass import MASS, NON_ELEMENT
 
-PI = 3.141592653589
+PI = 3.141_592_653_589
 
 FOYER_XML = True
 # MIXED UA (still AA dihedrals) AA
@@ -110,6 +110,7 @@ class OPLSUA_type:
             self.atomic_name = self.atomic_name
             pass
 
+
 @dataclass(frozen=True)
 class HarmonicBond:
     class_1: str
@@ -196,7 +197,7 @@ for line in ff_par_lines[ff_par_HEADER:ff_par_OPLS_TYPE_END]:
         epsilon,
         mass_dic=MASS,
         info_dic=OPLS_INFO,
-        element_translate=NON_ELEMENT
+        element_translate=NON_ELEMENT,
     )
     oplsua_list.append(new_opls_type)
 
