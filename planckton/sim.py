@@ -22,7 +22,7 @@ class Simulation:
         shrink_time=1e6,
         shrink_factor=5,
         n_steps=1e3,
-        mode="gpu"
+        mode="gpu",
     ):
         self.input_xml = input_xml
         self.e_factor = e_factor
