@@ -113,3 +113,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends git cmake && \
               -DSINGLE_PRECISION=ON && \
     make -j3 && \
     make install
+
+# mount points for filesystems on clusters
+RUN mkdir -p /nfs \
+    mkdir -p /oasis \
+    mkdir -p /scratch \
+    mkdir -p /work \
+    mkdir -p /projects \
+    mkdir -p /home1
