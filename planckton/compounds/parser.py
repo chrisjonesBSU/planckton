@@ -268,7 +268,7 @@ def write_xml(xml_data, xml_name):
 
 if __name__ == "__main__":
     # ff_params = "eh-idtbr-frcmod"
-    ff_params = "compounds/all-pcbm-frcmod"
+    ff_params = "all-frcmod"
     xml = "<ForceField>\n"
     with open(ff_params) as f:
         line = f.readline()
@@ -299,5 +299,4 @@ if __name__ == "__main__":
         else:
             xml += field_items[idx - 1].gen_xml_closer()
     xml += "</ForceField>\n"
-    print(xml)
-    write_xml(xml, "compounds/gaff_pcbm.4fxml")
+    write_xml(xml, "gaff.4fxml")
