@@ -281,7 +281,9 @@ if __name__ == "__main__":
         field_items = my_openMM.open_xml_prams[field]
         idx = 0
         # Make header
-        xml += field_items[0].gen_xml_header()
+        # Skip making the improper header
+        if type(field_items[idx]) != PeriodicTorsionForceImproper:
+            xml += field_items[0].gen_xml_header()
         while idx < len(field_items):
             if type(field_items[idx]) == PeriodicTorsionForce:
                 if field_items[idx].periodicity < 0:
@@ -297,6 +299,8 @@ if __name__ == "__main__":
                 xml += field_items[idx].gen_xml()
             idx += 1
         else:
-            xml += field_items[idx - 1].gen_xml_closer()
+            # skip making the period torsin footer
+            if type(field_items[idx - 1]) != PeriodicTorsionForce:
+                xml += field_items[idx - 1].gen_xml_closer()
     xml += "</ForceField>\n"
     write_xml(xml, "gaff.4fxml")
