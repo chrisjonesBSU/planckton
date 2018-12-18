@@ -108,5 +108,5 @@ class Simulation:
 
 
 if __name__ == "__main__":
-    my_sim = Simulation("init.hoomdxml", kT=3.0, gsd_write=1e5, log_write=1e5)
+    my_sim = Simulation("init.hoomdxml", kT=3.0, gsd_write=1e3, log_write=1e3, shrink_time=1e3, n_steps=1e5)
     my_sim.run()
