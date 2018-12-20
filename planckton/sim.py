@@ -105,6 +105,12 @@ class Simulation:
                 pass
             finally:
                 gsd_restart.write_restart()
+                hoomd.deprecated.dump.xml(
+                    group=group.all(),
+                    filename="final.xml",
+                    all=True,
+                    restart=True,
+                )
 
 
 if __name__ == "__main__":
