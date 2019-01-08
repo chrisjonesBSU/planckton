@@ -121,5 +121,9 @@ setup(
     cmdclass={
         'upload': UploadCommand,
     },
+    entry_points={
+        'console_scripts': [
+            "gsd2xml=planckton.utils.convert_gsd_xml:main",
+        ],
+    },
 )
-
